@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="/assets/"
+  data-template="vertical-menu-template-free">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Dashboard </title>
+
+    <meta name="description" content="" />
+
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet" />
+
+    <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="/assets/css/demo.css" />
+    <!-- Page CSS -->
+
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
+
+
+    <!-- Helpers -->
+    <script src="/assets/vendor/js/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="/assets/js/config.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  </head>
+
+  <body onload=checker(<%=JSON.stringify(hShots)%>,<%=JSON.stringify(hGoals)%>,<%=JSON.stringify(aShots)%>,<%=JSON.stringify(aGoals)%>,<%=JSON.stringify(hTeam)%>,<%=JSON.stringify(aTeam)%>)>
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y" style="background: url('https://wallpapers.com/images/featured/field-hockey-g7cyji2fhelfcwg4.jpg') no-repeat center center fixed;background-size: cover;">
+                <div class="row">
+
+                    <div class="col-lg-12 mb-4 order-0">
+                    <div class="card bg-black white justify-content-between">
+                        <div class="d-flex  row">
+                        <div class="col-sm-8 text-sm-end">
+                            <span class="d-lg-inline-block">
+                            <img
+                                src=<%= hTeam.badge %>
+                                height="140"
+                                width="140"
+                                alt="View Badge User"
+                            />
+                            </span>  
+                            <span class="white d-lg-inline-block">
+                                <br>
+                                <p>
+                                    <button type="button" class="btn rounded-pill  btn-dark f2">
+                                        <%= match.score.home %>
+                                    </button>...
+                                    <button type="button" class="btn rounded-pill  btn-dark f2">
+                                        <%= match.score.away %>
+                                    </button>
+   
+                                </p>                                                     
+                            </span>
+                            <span class="d-lg-inline-block">
+                                <img
+                                    src=<%= aTeam.badge %>
+                                    height="140"
+                                    width="140"
+                                    alt="View Badge User"
+                                />
+                                </span>  
+                            
+                        </div>
+                        <div class="col-sm-4 text-sm-end">
+                            <div class="dropdown">
+                                <button
+                                class="btn p-0"
+                                type="button"
+                                id="logoutID"
+                                data-bs-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false">
+                                <i class="bx bx-dots-vertical-rounded white"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="logoutID">
+                                    <a class="dropdown-item" href="/matches">BACK</a>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="col-lg-12 mb-4 order-1">   
+                        <div class="row">
+                            <!-- ATTACKING ACTION -->
+                            <div class="col-lg-6 col-md-12 mb-4">
+                                
+                                <div class="card mb-4">
+                                    <div class="card-header tc">
+                                    <h2>ATTACKING ACTION</h2>
+                                    </div>
+                                    <div class="card-body mb-4">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 mb-4" id="chart1">
+                                               
+                                            </div>
+                                        </div>
+                                    </div>
+                                  
+                                    
+                                </div> 
+                                    
+                                
+                                 
+                            </div>
+                            <div class="col-lg-6 col-md-12 mb-4">
+                                
+                                <div class="card mb-4">
+                                    <div class="card-header tc">
+                                    <h2>CUMMULATIVE ATTACKING</h2>
+                                    </div>
+                                    <div class="card-body mb-4">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 mb-4" id="chart2">
+                                               
+                                            </div>
+                                        </div>
+                                    </div>
+                                  
+                                    
+                                </div> 
+                                    
+                                
+                                 
+                            </div>   
+                            
+                            <div class="col-lg-6 col-md-12 mb-4">
+                                
+                                <div class="card mb-4">
+                                    <div class="card-header tc">
+                                    <h2>Match Squads</h2>
+                                    </div>
+                                    <div class="card-body mb-4">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-12 mb-4">
+                                               <h3>HOME</h3>
+                                               <%  
+                                               for(let i=0; i<match.hSquad.length; i++){ %>
+                                                <li class="d-flex pb-1 col-lg-4 col-md-6 mb-4 bb">
+                                                    <div class="avatar flex-shrink-0 me-3">
+                                                        <img src="https://robohash.org/$<%= match.hSquad[i].serial %>.png?set=set5" alt="User" class="rounded" />
+                                                    </div>
+                                                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                        <div class="me-2">
+                                                        <h6 class="mb-0"><%= match.hSquad[i].name %></h6>
+                                                        <small class="text-muted d-block mb-1"><%= match.hSquad[i].serial %></small>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                        <% } %>
+                                            </div>
+                                            <div class="col-lg-6 col-md-12 mb-4">
+                                                <h3>AWAY</h3>
+                                               <%  
+                                               for(let i=0; i<match.aSquad.length; i++){ %>
+                                                <li class="d-flex pb-1 col-lg-4 col-md-6 mb-4 bb">
+                                                    <div class="avatar flex-shrink-0 me-3">
+                                                        <img src="https://robohash.org/$<%= match.aSquad[i].serial %>.png?set=set5" alt="User" class="rounded" />
+                                                    </div>
+                                                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                        <div class="me-2">
+                                                        <h6 class="mb-0"><%= match.aSquad[i].name %></h6>
+                                                        <small class="text-muted d-block mb-1"><%= match.aSquad[i].serial %></small>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                        <% } %>
+                                             </div>
+                                        </div>
+                                    </div>
+                                  
+                                    
+                                </div> 
+                                    
+                                
+                                 
+                            </div>    
+                          
+                        </div> 
+                     
+                    </div> 
+                          
+                </div>
+                  
+            </div>    
+
+            <!-- / Content -->
+            <div class="content-backdrop fade"></div>
+          </div>
+         <!-- Content wrapper -->
+
+     <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/libs/popper/popper.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+    <!-- Main JS -->
+    <script src="/assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script src="/assets/js/dashboards-analytics.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <script>
+        checker=(hS,hG,aS,aG,hT,aT)=>{
+            chart1=(hS,hG,aS,aG)=>{
+                let hShots=hS;
+            let hGoals=hG;
+            const hShotFrequency = Array(60).fill(0); // Array with 60 elements initialized to 0
+            const hGoalFrequency = Array(60).fill(0); // Array with 60 elements initialized to 0
+            const hTotalFrequency= Array(60).fill(0);
+            // Record frequency data for shots
+            hShots.forEach(shot => {
+                // Increment the frequency count for the minute the shot was taken
+                hShotFrequency[shot.time - 1]++;
+                hTotalFrequency[shot.time - 1]++;
+            });
+            
+            let aShots=aS;
+            let aGoals=aG;
+            const aShotFrequency = Array(60).fill(0); // Array with 60 elements initialized to 0
+            const aGoalFrequency = Array(60).fill(0); // Array with 60 elements initialized to 0
+            const aTotalFrequency= Array(60).fill(0);
+            aShots.forEach(shot => {
+                // Increment the frequency count for the minute the shot was taken
+                aShotFrequency[shot.time - 1]++;
+                aTotalFrequency[shot.time - 1]++;
+            });
+            
+            // Record frequency data for goals
+            aGoals.forEach(goal => {
+                // Increment the frequency count for the minute the goal was scored
+                aGoalFrequency[goal.time - 1]++;
+                aTotalFrequency[goal.time - 1]++;
+            });
+            
+            
+            
+                // Specify the chart dimensions.
+                const width = 928;
+                const height = 600;
+                const marginTop = 20;
+                const marginRight = 20;
+                const marginBottom = 50;
+                const marginLeft = 60;
+            
+                // Create the positional scales.
+                const x = d3.scaleLinear()
+                    .domain([1, 60]) // Assuming the time runs from 1 to 60 minutes
+                    .range([marginLeft, width - marginRight]);
+            
+                const y = d3.scaleLinear()
+                    .domain([0, Math.max(d3.max(hTotalFrequency), d3.max(aTotalFrequency))]).nice()
+                    .range([height - marginBottom, marginTop]);
+            
+                // Create the SVG container.
+                const svg = d3.create("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("viewBox", [0, 0, width, height])
+                    .attr("style", "max-width: 100%; height: auto; overflow: visible; font: 10px sans-serif;");
+            
+                // Add the horizontal axis.
+                svg.append("g")
+                    .attr("transform", `translate(0,${height - marginBottom})`)
+                    .call(d3.axisBottom(x).ticks(10).tickSizeOuter(0));
+            
+                // Add the vertical axis.
+                svg.append("g")
+                    .attr("transform", `translate(${marginLeft},0)`)
+                    .call(d3.axisLeft(y))
+                    .call(g => g.select(".domain").remove())
+                    .call(g => g.append("text")
+                        .attr("x", -marginLeft)
+                        .attr("y", 10)
+                        .attr("fill", "currentColor")
+                        .attr("text-anchor", "start")
+                        .text("Frequency"));
+            
+                // Create a line generator for shots
+                const homeLine = d3.line()
+                    .x((d, i) => x(i + 1))
+                    .y(d => y(d));
+            
+                // Create a line generator for goals
+                const awayLine = d3.line()
+                    .x((d, i) => x(i + 1))
+                    .y(d => y(d));
+            
+                // Add the shot line
+                const homePath = svg.append("path")
+                    .datum(hTotalFrequency)
+                    .attr("fill", "none")
+                    .attr("stroke", "steelblue")
+                    .attr("stroke-width", 2.5)
+                    .attr("stroke-linejoin", "round")
+                    .attr("stroke-linecap", "round")
+                    .attr("d", homeLine);
+            
+                // Add the goal line
+                const awayPath = svg.append("path")
+                    .datum(aTotalFrequency)
+                    .attr("fill", "none")
+                    .attr("stroke", "green")
+                    .attr("stroke-width", 2.5)
+                    .attr("stroke-linejoin", "round")
+                    .attr("stroke-linecap", "round")
+                    .attr("d", awayLine)
+                    .style("opacity", 0.3); // Initially set the opacity to 0.3
+            
+                // Event listeners for highlighting
+                homePath.on("mouseenter", function() {
+                    homePath.attr("stroke", "red");
+                    awayPath.style("opacity", 0.3);
+                }).on("mouseleave", function() {
+                    homePath.attr("stroke", "steelblue");
+                    awayPath.style("opacity", 1);
+                });
+            
+                awayPath.on("mouseenter", function() {
+                    awayPath.attr("stroke", "red");
+                    homePath.style("opacity", 0.3);
+                }).on("mouseleave", function() {
+                    awayPath.attr("stroke", "green");
+                    homePath.style("opacity", 1);
+                });
+            
+                // Add labels
+                svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 0)
+                    .attr("x", 0 - height / 2)
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Frequency");
+            
+                svg.append("text")
+                    .attr("transform", `translate(${width / 2},${height})`)
+                    .style("text-anchor", "middle")
+                    .text("Time (minutes)");
+                    // Add legend
+            const legend = svg.append("g")
+                .attr("transform", `translate(${width - 200},${marginTop})`);
+            
+            legend.append("rect")
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", "steelblue");
+            
+            legend.append("text")
+                .attr("x", 24)
+                .attr("y", 9)
+                .attr("dy", "0.35em")
+                .text("Home");
+            
+            legend.append("rect")
+                .attr("x", 0)
+                .attr("y", 25)
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", "green");
+            
+            legend.append("text")
+                .attr("x", 24)
+                .attr("y", 34)
+                .attr("dy", "0.35em")
+                .text("Away");
+            
+                // Append the SVG to the chart div
+                document.getElementById('chart1').appendChild(svg.node());
+            }
+            chart2=(hT,aT)=>{
+                let hShots=hT.shots;
+            let hGoals=hT.goals;
+            const hShotFrequency = Array(60).fill(0); // Array with 60 elements initialized to 0
+            const hGoalFrequency = Array(60).fill(0); // Array with 60 elements initialized to 0
+            const hTotalFrequency= Array(60).fill(0);
+            // Record frequency data for shots
+            hShots.forEach(shot => {
+                // Increment the frequency count for the minute the shot was taken
+                hShotFrequency[shot.time - 1]++;
+                hTotalFrequency[shot.time - 1]++;
+            });
+            
+            let aShots=aT.shots;
+            let aGoals=aT.goals;
+            const aShotFrequency = Array(60).fill(0); // Array with 60 elements initialized to 0
+            const aGoalFrequency = Array(60).fill(0); // Array with 60 elements initialized to 0
+            const aTotalFrequency= Array(60).fill(0);
+            aShots.forEach(shot => {
+                // Increment the frequency count for the minute the shot was taken
+                aShotFrequency[shot.time - 1]++;
+                aTotalFrequency[shot.time - 1]++;
+            });
+            
+            // Record frequency data for goals
+            aGoals.forEach(goal => {
+                // Increment the frequency count for the minute the goal was scored
+                aGoalFrequency[goal.time - 1]++;
+                aTotalFrequency[goal.time - 1]++;
+            });
+            
+            
+            
+                // Specify the chart dimensions.
+                const width = 928;
+                const height = 600;
+                const marginTop = 20;
+                const marginRight = 20;
+                const marginBottom = 50;
+                const marginLeft = 60;
+            
+                // Create the positional scales.
+                const x = d3.scaleLinear()
+                    .domain([1, 60]) // Assuming the time runs from 1 to 60 minutes
+                    .range([marginLeft, width - marginRight]);
+            
+                const y = d3.scaleLinear()
+                    .domain([0, Math.max(d3.max(hTotalFrequency), d3.max(aTotalFrequency))]).nice()
+                    .range([height - marginBottom, marginTop]);
+            
+                // Create the SVG container.
+                const svg = d3.create("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("viewBox", [0, 0, width, height])
+                    .attr("style", "max-width: 100%; height: auto; overflow: visible; font: 10px sans-serif;");
+            
+                // Add the horizontal axis.
+                svg.append("g")
+                    .attr("transform", `translate(0,${height - marginBottom})`)
+                    .call(d3.axisBottom(x).ticks(10).tickSizeOuter(0));
+            
+                // Add the vertical axis.
+                svg.append("g")
+                    .attr("transform", `translate(${marginLeft},0)`)
+                    .call(d3.axisLeft(y))
+                    .call(g => g.select(".domain").remove())
+                    .call(g => g.append("text")
+                        .attr("x", -marginLeft)
+                        .attr("y", 10)
+                        .attr("fill", "currentColor")
+                        .attr("text-anchor", "start")
+                        .text("Frequency"));
+            
+                // Create a line generator for shots
+                const homeLine = d3.line()
+                    .x((d, i) => x(i + 1))
+                    .y(d => y(d));
+            
+                // Create a line generator for goals
+                const awayLine = d3.line()
+                    .x((d, i) => x(i + 1))
+                    .y(d => y(d));
+            
+                // Add the shot line
+                const homePath = svg.append("path")
+                    .datum(hTotalFrequency)
+                    .attr("fill", "none")
+                    .attr("stroke", "steelblue")
+                    .attr("stroke-width", 2.5)
+                    .attr("stroke-linejoin", "round")
+                    .attr("stroke-linecap", "round")
+                    .attr("d", homeLine);
+            
+                // Add the goal line
+                const awayPath = svg.append("path")
+                    .datum(aTotalFrequency)
+                    .attr("fill", "none")
+                    .attr("stroke", "green")
+                    .attr("stroke-width", 2.5)
+                    .attr("stroke-linejoin", "round")
+                    .attr("stroke-linecap", "round")
+                    .attr("d", awayLine)
+                    .style("opacity", 0.3); // Initially set the opacity to 0.3
+            
+                // Event listeners for highlighting
+                homePath.on("mouseenter", function() {
+                    homePath.attr("stroke", "red");
+                    awayPath.style("opacity", 0.3);
+                }).on("mouseleave", function() {
+                    homePath.attr("stroke", "steelblue");
+                    awayPath.style("opacity", 1);
+                });
+            
+                awayPath.on("mouseenter", function() {
+                    awayPath.attr("stroke", "red");
+                    homePath.style("opacity", 0.3);
+                }).on("mouseleave", function() {
+                    awayPath.attr("stroke", "green");
+                    homePath.style("opacity", 1);
+                });
+            
+                // Add labels
+                svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 0)
+                    .attr("x", 0 - height / 2)
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Frequency");
+            
+                svg.append("text")
+                    .attr("transform", `translate(${width / 2},${height})`)
+                    .style("text-anchor", "middle")
+                    .text("Time (minutes)");
+                    // Add legend
+            const legend = svg.append("g")
+                .attr("transform", `translate(${width - 200},${marginTop})`);
+            
+            legend.append("rect")
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", "steelblue");
+            
+            legend.append("text")
+                .attr("x", 24)
+                .attr("y", 9)
+                .attr("dy", "0.35em")
+                .text("Home");
+            
+            legend.append("rect")
+                .attr("x", 0)
+                .attr("y", 25)
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", "green");
+            
+            legend.append("text")
+                .attr("x", 24)
+                .attr("y", 34)
+                .attr("dy", "0.35em")
+                .text("Away");
+            
+                // Append the SVG to the chart div
+                document.getElementById('chart2').appendChild(svg.node());
+            }
+            
+            chart1(hS,hG,aS,aG)
+            chart2(hT,aT)
+        }
+    </script>
+   
+
+  </body>
+</html>

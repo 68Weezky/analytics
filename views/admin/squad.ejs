@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="/assets/"
+  data-template="vertical-menu-template-free">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Dashboard </title>
+
+    <meta name="description" content="" />
+
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet" />
+
+    <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="/assets/css/demo.css" />
+    <!-- Page CSS -->
+
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
+
+
+    <!-- Helpers -->
+    <script src="/assets/vendor/js/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="/assets/js/config.js"></script>
+  </head>
+
+  <body>
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y" style="background: url('https://wallpapers.com/images/featured/field-hockey-g7cyji2fhelfcwg4.jpg') no-repeat center center fixed;background-size: cover;">
+                <div class="row">
+
+                    <div class="col-lg-12 mb-4 order-0">
+                    <div class="card bg-black white">
+                        <div class="d-flex align-items-end row">
+                        <div class="col-sm-7 text-sm-left">
+                            <span class="d-lg-inline-block">
+                            <img
+                                src=<%= team.badge %>
+                                height="140"
+                                width="140"
+                                alt="View Badge User"
+                            />
+                            </span>  
+                            <span class="white d-lg-inline-block">
+                                <p></p>
+                                <b class="f1 f-headline i">
+                                    <%= team.name %>
+                                </b> 
+                                <p>Manager:<%= team.manager %></p>                                                     
+                            </span>
+                            
+                        </div>
+                        <div class="col-sm-5 text-sm-end">
+                            <div class="dropdown">
+                                <button
+                                class="btn p-0"
+                                type="button"
+                                id="logoutID"
+                                data-bs-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false">
+                                <i class="bx bx-dots-vertical-rounded white"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="logoutID">
+                                    <a class="dropdown-item" href="/admin">BACK</a>
+
+                                    <a class="dropdown-item" href="/admin/Logout">LOGOUT</a>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="col-lg-12 mb-4 order-1">   
+                        <div class="row">
+                            <!-- SQUAD -->
+                            <div class="col-lg-6 col-md-12 mb-4">
+                                <div class="card mb-4">
+                                <div class="card-header tc">
+                                <h2>GAME <%= match.number %> SQUAD</h2>
+                                </div>
+                                <div class="card-body mb-4">
+                                    <%  
+                                        let squad;
+                                        if(match.home===team.name){
+                                            squad=match.hSquad;
+                                         
+                                        }else if(match.away===team.name){
+                                            squad=match.aSquad;
+                                            console.log(squad);
+                                        }
+                                      
+                                        for(let i=0; i<squad.length; i++){ %>
+                                            <li class="d-flex pb-1 col-lg-4 col-md-6 mb-4 bb">
+                                                <div class="avatar flex-shrink-0 me-3">
+                                                  <img src="https://robohash.org/$<%= squad[i].serial %>.png?set=set5" alt="User" class="rounded" />
+                                                </div>
+                                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                  <div class="me-2">
+                                                    <h6 class="mb-0"><%= squad[i].name %></h6>
+                                                    <small class="text-muted d-block mb-1"><%= squad[i].serial %></small>
+                                                  </div>
+                                                </div>
+                                              </li>
+                                    <% } %>
+                                </div>
+                                
+                        </div>           
+                            </div> 
+                        <!-- TEAM PLAYERS -->
+                        <div class="col-lg-6 col-md-12 mb-4">
+                        <div class="card mb-4">
+                            <div class="card-header tc">
+                            <h2>PLAYERS</h2>
+                            </div>
+                            <div class="card-body mb-4">
+                            <div class="row">
+                                <form action="/admin/squad" method="post">
+                                    <%
+                                        let ground 
+                                        if(match.home===team.name){
+                                            ground="Home";
+                                     
+                                        }else if(match.away===team.name){
+                                            ground="Away";
+                                    } %>
+                                    <input type="hidden" name="ground" value=<%= ground %>>
+                                    <input type="hidden" name="matchNo" value="<%= match.number %>">
+                                    <button type="submit" class="btn btn-info">ADD</button>
+                                <% for(let player of players){
+                                    if(player.status=="Reg"){
+                                %>   
+                                <li class="d-flex pb-1 col-lg-4 col-md-6 mb-4 bb">
+                                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                    <div class="me-2">
+                                        <h6 class="mb-0"><%= player.name %></h6>
+                                        <small class="text-muted d-block mb-1"><%= player.serial %></small>
+                                    </div>
+                                  
+                                    <input type="checkbox" name="selected" value='{"name":"<%= player.name %>","serial":"<%= player.serial %>"} %>'> 
+                                    <div class="user-progress d-flex align-items-center gap-1">
+                                        <a href="/admin/<%=player.serial%>">
+                                            <button type="button" class="btn btn-outline-info">VIEW</button>     
+                                        </a>
+                                    </div>
+                                    </div>
+                                </li>
+                                <% }} %>
+                                </form>
+                                
+                            </div>
+                        </div>
+                        </div>
+        
+            
+                        </div>
+                        </div> 
+                          
+                    </div>
+                </div>    
+
+    
+
+                
+  
+
+              </div>
+            </div>
+            <!-- / Content -->
+            <div class="content-backdrop fade"></div>
+          </div>
+         <!-- Content wrapper -->
+
+     <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/libs/popper/popper.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+    <!-- Main JS -->
+    <script src="/assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script src="/assets/js/dashboards-analytics.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+   
+  </body>
+</html>

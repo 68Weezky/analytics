@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="/assets/"
+  data-template="vertical-menu-template-free">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Dashboard </title>
+
+    <meta name="description" content="" />
+
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet" />
+
+    <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="/assets/css/demo.css" />
+    <!-- Page CSS -->
+
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
+
+
+    <!-- Helpers -->
+    <script src="/assets/vendor/js/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="/assets/js/config.js"></script>
+  </head>
+
+  <body>
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y" style="background: url('https://wallpapers.com/images/featured/field-hockey-g7cyji2fhelfcwg4.jpg') no-repeat center center fixed;background-size: cover;">
+                <div class="row">
+
+
+                    <div class="col-lg-12 mb-4 order-0">
+                        <div class="card bg-black white justify-content-between">
+                            <div class="d-flex  row">
+                            <div class="col-sm-8 text-sm-end">
+                                <span class="d-lg-inline-block">
+                                <img
+                                    src=<%= hTeam.badge %>
+                                    height="140"
+                                    width="140"
+                                    alt="View Badge User"
+                                />
+                                </span>  
+                                <span class="white d-lg-inline-block">
+                                    <br>
+                                    <p>
+                                        <%= match.time.toLocaleDateString()%>
+                                        <br>
+                                        <%= match.time.toLocaleTimeString()%>
+                                    </p>                                                     
+                                </span>
+                                <span class="d-lg-inline-block">
+                                    <img
+                                        src=<%= aTeam.badge %>
+                                        height="140"
+                                        width="140"
+                                        alt="View Badge User"
+                                    />
+                                    </span>  
+                                
+                            </div>
+                            <div class="col-sm-4 text-sm-end">
+                                <div class="dropdown">
+                                    <button
+                                    class="btn p-0"
+                                    type="button"
+                                    id="logoutID"
+                                    data-bs-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                    <i class="bx bx-dots-vertical-rounded white"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="logoutID">
+                                    <a class="dropdown-item" href="/admin/Logout">LOGOUT</a>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            
+                            
+                            </div>
+                        </div>
+                        </div>
+
+
+                    <div class="col-lg-12 mb-4 order-1">   
+                        <div class="row">
+
+                            <!--GAME CONTROLS  -->
+                            <div class="col-lg-6 col-md-12 mb-4">
+                                
+                                <div class="card mb-4">
+                                    <div class="card-header tc">
+                                    <h2>CONTROLS</h2>
+                                    </div>
+                                    <div class="card-body mb-4">
+                                        <div class="tc">
+                        
+                                            <button type="button" class="btn btn-primary btn-xl mb-4" onclick=startPauseTimer()>
+                                                <span class="tf-icons bx bx-pie-chart-alt me-1"></span>
+                                                <span id="timer"></span>
+                                            </button>
+                                            <br>
+                                        </div>
+                                       
+                                        <div class="row">
+                                           <!-- FOULS -->
+                                          <div class="col-lg-4 col-md-12 mb-4">
+                                             <!-- HOME FOUL -->
+                                             <div class="mt-3">
+                                              <!-- Button trigger modal -->
+                                              <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#hFoulModal" onclick=foulClock("<%= hTeam.name %>")>
+                                                <span class="tf-icons bx bx-error-alt me-1"></span>
+                                                HOME FOUL
+                                              </button>
+                      
+                                              <!-- Modal -->
+                                              <div class="modal fade" id="hFoulModal" tabindex="-1" style="display: none;" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                  <div class="modal-content">
+                                                    <div class="modal-header">
+                                                      <h5 class="modal-title" id="exampleModalLabel1">Record Home Foul</h5>
+                                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                      <div class="col-lg-12 col-md-12 mb-4">
+                                                          <h3>Players:</h3>
+                                                          <%  
+                                                              let squad=match.hSquad;
+                                                                  
+                                                              for(let i=0; i<squad.length; i++){
+                                                                let serial=squad[i].serial;
+                                                                %>
+                                                                  <button class="btn btn-outline-primary" onclick=hfp("<%= serial %>")>
+                                                                      <div class="avatar flex-shrink-0 me-3">
+                                                                          <img src="https://robohash.org/$<%= squad[i].serial %>.png?set=set5" alt="User" class="rounded" />
+                                                                      </div>
+                                                                      <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                          <div class="me-2">
+                                                                          <h6 class="mb-0"><%= squad[i].name %></h6>
+                                                                          <small class="text-muted d-block mb-1"><%= serial %></small>
+                                                                          </div>
+                                                                      </div>
+                                                                  </button>
+                                                          <% } %>
+                                                      </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                      {player:<span id="hfp"></span>,team:<span><%= hTeam.name %></span>,clock:<span id="hfc"></span>}
+                                                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick=recordFoul()>
+                                                        Save
+                                                      </button>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                          </div>
+                                      <!-- AWAY FOUL -->
+                                      <div class="mt-3">
+                                          <!-- Button trigger modal -->
+                                          <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#aFoulModal" onclick=foulClock("<%= aTeam.name %>")>
+                                            <span class="tf-icons bx bx-error-alt me-1"></span>
+                                            AWAY FOUL
+                                          </button>
+                  
+                                          <!-- Modal -->
+                                          <div class="modal fade" id="aFoulModal" tabindex="-1" style="display: none;" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                              <div class="modal-content">
+                                                <div class="modal-header">
+                                                  <h5 class="modal-title" id="exampleModalLabel1">Record Away Foul</h5>
+                                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                  <div class="col-lg-12 col-md-12 mb-4">
+                                                      <h3>Players:</h3>
+                                                      <%  
+                                                          squad=match.aSquad;
+                                                              
+                                                          for(let i=0; i<squad.length; i++){
+                                                            let serial=squad[i].serial;
+                                                            %>
+                                                              <button class="btn btn-outline-primary" onclick=afp("<%= serial %>")>
+                                                                 <div class="avatar flex-shrink-0 me-3">
+                                                                      <img src="https://robohash.org/$<%= squad[i].serial %>.png?set=set5" alt="User" class="rounded" />
+                                                                  </div>
+                                                                  <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                      <div class="me-2">
+                                                                      <h6 class="mb-0"><%= squad[i].name %></h6>
+                                                                      <small class="text-muted d-block mb-1"><%= serial %></small>
+                                                                      </div>
+                                                                  </div>
+                                                              </button>
+                                                      <% } %>
+                                                  </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                  {player:<span id="afp"></span>,team:<span><%= aTeam.name %></span>,clock:<span id="afc"></span>}
+                                                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick=recordFoul()>
+                                                    Save
+                                                  </button>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                      </div>   
+                                          </div> 
+
+                                          <!-- SHOTS -->
+                                          <div class="col-lg-4 col-md-12 mb-4">
+                                            <!-- HOME SHOT -->
+                                            <div class="mt-3">
+                                             <!-- Button trigger modal -->
+                                             <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#hShotModal" onclick=shotClock("<%= hTeam.name %>")>
+                                               <span class="tf-icons bx bx-chevrons-up me-1"></span>
+                                               HOME SHOT
+                                             </button>
+                     
+                                             <!-- Modal -->
+                                             <div class="modal fade" id="hShotModal" tabindex="-1" style="display: none;" aria-hidden="true">
+                                               <div class="modal-dialog" role="document">
+                                                 <div class="modal-content">
+                                                   <div class="modal-header">
+                                                     <h5 class="modal-title" id="exampleModalLabel1">Record Home Shot</h5>
+                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                   </div>
+                                                   <div class="modal-body">
+                                                     <div class="col-lg-12 col-md-12 mb-4">
+                                                         <h3>Players:</h3>
+                                                         <%  
+                                                             squad=match.hSquad;
+                                                                 
+                                                             for(let i=0; i<squad.length; i++){
+                                                               let serial=squad[i].serial;
+                                                               %>
+                                                                 <button class="btn btn-outline-primary" onclick=hsp("<%= serial %>")>
+                                                                     <div class="avatar flex-shrink-0 me-3">
+                                                                         <img src="https://robohash.org/$<%= squad[i].serial %>.png?set=set5" alt="User" class="rounded" />
+                                                                     </div>
+                                                                     <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                         <div class="me-2">
+                                                                         <h6 class="mb-0"><%= squad[i].name %></h6>
+                                                                         <small class="text-muted d-block mb-1"><%= serial %></small>
+                                                                         </div>
+                                                                     </div>
+                                                                 </button>
+                                                         <% } %>
+                                                     </div>
+                                                   </div>
+                                                   <div class="modal-footer">
+                                                     {player:<span id="hsp"></span>,team:<span><%= hTeam.name %></span>,clock:<span id="hsc"></span>}
+                                                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal"onclick=recordShot() >
+                                                       Save
+                                                     </button>
+                                                   </div>
+                                                 </div>
+                                               </div>
+                                             </div>
+                                            </div>
+                                            <!-- AWAY SHOT -->
+                                            <div class="mt-3">
+                                              <!-- Button trigger modal -->
+                                              <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#aShotModal" onclick=shotClock("<%= aTeam.name %>")>
+                                                <span class="tf-icons bx bx-chevrons-up me-1"></span>
+                                                AWAY SHOT
+                                              </button>
+                      
+                                              <!-- Modal -->
+                                              <div class="modal fade" id="aShotModal" tabindex="-1" style="display: none;" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                  <div class="modal-content">
+                                                    <div class="modal-header">
+                                                      <h5 class="modal-title" id="exampleModalLabel1">Record Away Shot</h5>
+                                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                      <div class="col-lg-12 col-md-12 mb-4">
+                                                          <h3>Players:</h3>
+                                                          <%  
+                                                              squad=match.aSquad;
+                                                                  
+                                                              for(let i=0; i<squad.length; i++){
+                                                                let serial=squad[i].serial;
+                                                                %>
+                                                                  <button class="btn btn-outline-primary" onclick=hsp("<%= serial %>")>
+                                                                      <div class="avatar flex-shrink-0 me-3">
+                                                                          <img src="https://robohash.org/$<%= squad[i].serial %>.png?set=set5" alt="User" class="rounded" />
+                                                                      </div>
+                                                                      <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                          <div class="me-2">
+                                                                          <h6 class="mb-0"><%= squad[i].name %></h6>
+                                                                          <small class="text-muted d-block mb-1"><%= serial %></small>
+                                                                          </div>
+                                                                      </div>
+                                                                  </button>
+                                                          <% } %>
+                                                      </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                      {player:<span id="asp"></span>,team:<span><%= aTeam.name %></span>,clock:<span id="asc"></span>}
+                                                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal"onclick=recordShot() >
+                                                        Save
+                                                      </button>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>   
+                                         </div> 
+                                          <!-- GOALS -->
+                                          <div class="col-lg-4 col-md-12 mb-4">
+                                               <!-- HOME GOAL -->
+                                               <div class="mt-3">
+                                                <!-- Button trigger modal -->
+                                                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#hGoalModal" onclick=goalClock("<%= hTeam.name %>")>
+                                                    <span class="tf-icons bx bx-bullseye me-1"></span>
+                                                    HOME GOAL
+                                                </button>
+                        
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="hGoalModal" tabindex="-1" style="display: none;" aria-hidden="true">
+                                                  <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                      <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel1">Record Home Goal</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                      </div>
+                                                      <div class="modal-body">
+                                                        <div class="col-lg-12 col-md-12 mb-4">
+                                                            <h3>Players:</h3>
+                                                            <%  
+                                                                squad=match.hSquad;
+                                                                    
+                                                                for(let i=0; i<squad.length; i++){ 
+                                                                  let serial= squad[i].serial 
+                                                                  %>
+                                                                 
+                                                                    <button class="btn btn-outline-primary" onclick=hgp("<%=serial%>")>
+                                                                        <div class="avatar flex-shrink-0 me-3">
+                                                                            <img src="https://robohash.org/$<%=serial %>.png?set=set5" alt="User" class="rounded" />
+                                                                        </div>
+                                                                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                            <div class="me-2">
+                                                                            <h6 class="mb-0"><%= squad[i].name %></h6>
+                                                                            <small class="text-muted d-block mb-1"><%=serial%></small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </button>
+                                                            <% } %>
+                                                            <h3>Type:</h3>
+                                                            <button class="btn btn-primary" onclick=hgt("FG")>FG</button>
+                                                            <button class="btn btn-primary" onclick=hgt("PC")>PC</button>
+                                                            <button class="btn btn-primary" onclick=hgt("PS")>PS</button>
+                                                        </div>
+                                                      </div>
+                                                      <div class="modal-footer">
+                                                        {type:<span id="hgt"></span>,player:<span id="hgp"></span>,team:<span><%= hTeam.name %></span>,clock:<span id="hgc"></span>}
+                                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick=recordGoal()>
+                                                          Save
+                                                        </button>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                        <!-- AWAY GOAL -->
+                                              <div class="mt-3">
+                                                <!-- Button trigger modal -->
+                                                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#aGoalModal" onclick=goalClock("<%= aTeam.name %>")>
+                                                    <span class="tf-icons bx bx-bullseye me-1"></span>
+                                                    AWAY GOAL
+                                                </button>
+                        
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="aGoalModal" tabindex="-1" style="display: none;" aria-hidden="true">
+                                                  <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                      <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel1">Record Away Goal</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                      </div>
+                                                      <div class="modal-body">
+                                                        <div class="col-lg-12 col-md-12 mb-4">
+                                                            <h3>Players: </h3>
+                                                            <%  
+                                                                squad=match.aSquad;
+                                                                    
+                                                                for(let i=0; i<squad.length; i++){ 
+                                                                  let serial= squad[i].serial 
+                                                                  %>
+                                                                    <button class="btn btn-outline-primary" onclick=agp("<%=serial%>")>
+                                                                        <div class="avatar flex-shrink-0 me-3">
+                                                                            <img src="https://robohash.org/$<%= squad[i].serial %>.png?set=set5" alt="User" class="rounded" />
+                                                                        </div>
+                                                                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                                            <div class="me-2">
+                                                                            <h6 class="mb-0"><%= squad[i].name %></h6>
+                                                                            <small class="text-muted d-block mb-1"><%= squad[i].serial %></small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </button>
+                                                            <% } %>
+                                                            <h3>Type:</h3>
+                                                            <button class="btn btn-primary" onclick=agt("FG")>FG</button>
+                                                            <button class="btn btn-primary" onclick=agt("PC")>PC</button>
+                                                            <button class="btn btn-primary" onclick=agt("PS")>PS</button>
+                                                        </div>
+                                                      </div>
+                                                      <div class="modal-footer">
+                                                        {type:<span id="agt"></span>,player:<span id="agp"></span>,team:<span><%= aTeam.name %></span>,clock:<span id="agc"></span>}
+                                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick=recordGoal()>
+                                                          Save
+                                                        </button>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                          </div>  
+
+
+                                        </div>   
+                                        
+                                     
+                                      
+                                            
+                                            
+                                        
+                                 
+                                    </div>
+                                  
+                                    
+                                </div> 
+                                    
+                                
+                                 
+                            </div>   
+                            <div class="col-lg-6 col-md-12 mb-4 tc" id="endForm" style="display: none;">
+                              <form action='/admin/matchRes/<%= match.number %>' method='post'>
+                                <button class='btn btn-primary f4  fw6 ma4' type='submit'>
+                                  <input type="hidden" name="goals" id="goals">
+                                  <input type="hidden" name="fouls" id="fouls">
+                                  <input type="hidden" name="shots" id="shots">
+                                  SAVE RESULTS
+                                </button>
+                              </form>
+                            </div>
+                        </div> 
+                     
+                    </div> 
+                          
+                </div>
+                  
+            </div>    
+
+            <!-- / Content -->
+            <div class="content-backdrop fade"></div>
+          </div>
+         <!-- Content wrapper -->
+
+     <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/libs/popper/popper.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+    <!-- Main JS -->
+    <script src="/assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script src="/assets/js/dashboards-analytics.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <script>
+      let goalRec={};
+      let foulRec={};
+      let shotRec={};
+      let goalArr=[];
+      let foulArr=[];
+      let shotArr=[];
+
+      let goalClock=(team)=>{
+        goalRec={};
+        goalRec.team=team;
+        goalRec.time=count;
+        document.getElementById('hgc').innerHTML=count;
+        document.getElementById('agc').innerHTML=count;
+      }
+
+      let foulClock=(team)=>{
+        foulRec={};
+        foulRec.team=team;
+        foulRec.time=count;
+        document.getElementById('hfc').innerHTML=count;
+        document.getElementById('afc').innerHTML=count;
+      }
+
+      let shotClock=(team)=>{
+        shotRec={};
+        shotRec.team=team;
+        shotRec.time=count;
+        document.getElementById('hsc').innerHTML=count;
+        document.getElementById('asc').innerHTML=count;
+      }
+
+      let hgp=(val)=>{
+        goalRec.player=val;
+        document.getElementById('hgp').innerHTML=val;
+      }
+      let agp=(val)=>{
+        goalRec.player=val;
+        document.getElementById('agp').innerHTML=val;
+      }
+
+      let hfp=(val)=>{
+        foulRec.player=val;
+        document.getElementById('hfp').innerHTML=val;
+      }
+      let afp=(val)=>{
+        foulRec.player=val;
+        document.getElementById('afp').innerHTML=val;
+      }
+
+      let hsp=(val)=>{
+        shotRec.player=val;
+        document.getElementById('hsp').innerHTML=val;
+      }
+      let asp=(val)=>{
+        foulRec.player=val;
+        document.getElementById('asp').innerHTML=val;
+      }
+
+      let hgt=(val)=>{
+        goalRec.type=val;
+        document.getElementById('hgt').innerHTML=val;
+      }
+      let agt=(val)=>{
+        goalRec.type=val;
+        document.getElementById('agt').innerHTML=val;
+      }
+
+      let recordGoal=()=>{
+        if(typeof goalRec.player=="undefined"||typeof goalRec.type=="undefined"){
+          window.alert("missing field!")
+        }else{
+          let a={...goalRec};
+          delete a.type;
+          shotArr.push({...a})
+          goalArr.push(goalRec);
+          goalRec={};
+        }
+      }
+
+      let recordFoul=()=>{
+        if(typeof foulRec.player=="undefined"){
+          window.alert("missing field!")
+        }else{
+          foulArr.push(foulRec);
+          foulRec={};
+        }
+      }
+
+      let recordShot=()=>{
+        if(typeof shotRec.player=="undefined"){
+          window.alert("missing field!")
+        }else{
+          shotArr.push(shotRec);
+          shotRec={};
+        }
+      }
+ 
+        // Variables
+        let interval;
+        let count = 0;
+        let isRunning = false;
+        
+        // Function to start or pause the timer
+        function startPauseTimer() {
+          if (!isRunning&&count<60) {
+            interval = setInterval(updateTimer, 1000); // Update every second
+            // document.getElementById("timer").textContent = "Running...";
+          } else {
+            clearInterval(interval);
+            // document.getElementById("timer").textContent = "Paused";
+          }
+          isRunning = !isRunning;
+        }
+        
+        // Function to update the timer
+        function updateTimer() {
+          count++;
+          document.getElementById("timer").textContent = formatTime(count);
+          if (count % 15 === 0) {
+            let quarter;
+          switch (count/15) {
+          case 1:
+            quarter = "Q1";
+            break;
+          case 2:
+             quarter = "Q2";
+            break;
+          case 3:
+            quarter = "Q3";
+            break;
+          case 4:
+            quarter = "GAME!";
+            document.getElementById('goals').value=JSON.stringify(goalArr);
+            document.getElementById('fouls').value=JSON.stringify(foulArr);
+            document.getElementById('shots').value=JSON.stringify(shotArr);
+            document.getElementById('endForm').style.display='block';
+            break;
+         
+          }
+            clearInterval(interval);
+            document.getElementById("timer").textContent = "End of "+quarter;
+            isRunning = false;
+          }
+        }
+        
+        // Function to format time (e.g., 00:00)
+        function formatTime(time) {
+          const minutes = Math.floor(time / 60);
+          const remainingSeconds = time % 60;
+          return `${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+        
+        // Event listener for spacebar
+        document.addEventListener("keydown", function(event) {
+          if (event.keyCode === 16 || event.key === 'ShiftLeft') {
+            startPauseTimer();
+          }
+        });
+        
+        // Initial update of the timer display
+        document.getElementById("timer").textContent = formatTime(count);
+    </script>
+   
+  </body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "name": "sportsanalytics",
+  "version": "1.0.0",
+  "description": "A sports analytics system to facilitate visualization of sports data.",
+  "main": "app.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NewellSkk/sportsAnalytics.git"
+  },
+  "author": "NewellSkk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NewellSkk/sportsAnalytics/issues"
+  },
+  "homepage": "https://github.com/NewellSkk/sportsAnalytics#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "mongoose": "^7.6.3",
+    "nodemon": "^3.0.1"
+  },
+  "emmet.includeLanguages": {
+    "ejs": "html"
+}
+}

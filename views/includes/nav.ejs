@@ -1,0 +1,54 @@
+<div class="backdrop"></div>
+<header class="main-header bg-black">
+    <button id="side-menu-toggle">Menu</button>
+    <nav class="main-header__nav ">
+        <ul class="main-header__item-list">
+            
+            
+                <li class="main-header__item">
+                    <a class="<%= path === '/index' ? 'active' : '' %>" href="/admin">Index</a>
+                </li>
+                <% if ((user.rank === 'league_manager')||(user.rank ==='admin')){ %>
+                    <% if (user.rank === 'league_manager'){ %>
+                        <li class="main-header__item">
+                            <a class="<%= path === '/addTeam' ? 'active' : '' %>" href="/admin/addTeam">Add Team</a>
+                        </li>
+
+                        <li class="main-header__item">
+                            <a class="<%= path === '/requests' ? 'active' : '' %>" href="/admin/requests">Requests</a>
+                        </li>
+                    <% } %>    
+                    <li class="main-header__item">
+                        <a class="<%= path === '/addUser' ? 'active' : '' %>" href="/admin/addUser">Add User</a>
+                    </li>
+                <% } %>
+                <% if (user.rank === 'team_manager'){ %>
+                    <li class="main-header__item">
+                        <a class="<%= path === '/viewTeam' ? 'active' : '' %>" href="/admin/viewTeam">View Team</a>
+                    </li>
+                <% } %>
+                <li  class="main-header__item">
+                    <a class="" href="/admin/Logout">Log out</a>
+                </li>
+            
+           
+        </ul>
+    </nav>
+</header>
+
+<nav class="mobile-nav">
+        <ul class="mobile-nav__item-list">
+                <li class="mobile-nav__item">
+                     <a class="<%= path === '/index' ? 'active' : '' %>" href="/">Index</a>
+                </li>
+                <li class="mobile-nav__item">
+                    <a class="<%= path === '/info' ? 'active' : '' %>" href="#">My Info</a>
+                </li>
+                <li class="mobile-nav__item">
+                    <a class="<%= path === '/addUser' ? 'active' : '' %>" href="#">Add User</a>
+                </li>
+                <li class="mobile-nav__item">
+                    <a class="" href="/admin/Logout">Log out</a>
+                </li>
+            </ul>
+</nav>
