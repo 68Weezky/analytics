@@ -341,7 +341,7 @@
                   <div class="card mb-4">
                     <div class="card-header tc">
                       <h2>PLANNER</h2>
-                      <b class="blue">Season:<%= season.name %></b>
+                      <b class="blue">Season:<%= season?.name %></b>
                     </div>
                     <div class="card-body">
                       <form action="/admin/setMatch" method="post" class="datepickers">
@@ -363,7 +363,7 @@
                           <div class="row">
                             <div class="col-md-4 col-12 mb-3 mb-md-0">
                               <div class="list-group">
-                                <% for(match of season.matches){
+                                <% for(match of season?.matches || []){
                                       if(match.time==null){
                                   %>
                                   <a class="list-group-item list-group-item-action" id="list-<%= match.id %>-list" data-bs-toggle="list" href="#list-<%= match.id%>">                                  
@@ -374,7 +374,7 @@
                             </div>
                             <div class="col-md-8 col-12">
                               <div class="tab-content">
-                                <% for(match of season.matches){
+                                <% for(match of season?.matches || []){
                                       if(match.time==null){
                                   %>
                                 <div class="tab-pane fade" id="list-<%= match.id %>">

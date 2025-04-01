@@ -71,7 +71,11 @@ module.exports.getIndex=async(req,res,next)=>{
             players=await  Player.model.find({});
             teams= await  Team.model.find({league:"Masters"});
             season= await Season.model.findOne({status:"Ongoing"});
-            matches= await Match.model.find({season:season.name});
+            if (season) {
+                matches= await Match.model.find({season:season.name});
+            } else {
+                matches = []
+            }
             res.render('admin/index',
                 {
                     title:"Index",
@@ -161,6 +165,11 @@ module.exports.postNewSeason=(req,res,next)=>{
 module.exports.postSetMatch=(req,res,next)=>{
     const match=req.body.match;
     const time=req.body.matchTime;
+
+    if (!match) {
+        res.redirect("/admin");
+        return;
+    }
   
     Season.model.findOne({status:"Ongoing"}).then(result=>{
         let setMatch={
