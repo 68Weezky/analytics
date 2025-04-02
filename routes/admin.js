@@ -1,52 +1,59 @@
-const express = require("express");
+const express = require('express');
+const router = express.Router();
 const adminController = require("../controllers/admin");
 const teamController = require("../controllers/team");
-const router = express.Router();
 
-router.get('/register',adminController.getRegister);
+// Session validation middleware
+const authenticate = (req, res, next) => {
+  if (!req.session.user) {
+    return res.redirect('/admin/login');
+  }
+  next();
+};
 
-router.post('/register',adminController.postRegister);
+// Public routes
+router.get('/login', adminController.getLogin);
+router.post('/login', adminController.postLogin);
 
-router.get('/',adminController.authenticate,adminController.getIndex);
+router.get('/register', adminController.getRegister);
+router.post('/register', adminController.postRegister);
 
-router.get('/',adminController.getLogin);
+// Protected routes
+router.use(authenticate); // Applies to all routes below
 
-router.post('/',adminController.postLogin);
+// Dashboard
+router.get('/dashboard', adminController.getIndex);
 
-router.get('/addUser',/*adminController.authenticate,*/ adminController.getAddUser);
+// User management
+router.get('/addUser', adminController.getAddUser);
+router.post('/addUser', adminController.postAddUser);
 
-router.post('/addUser',/*adminController.authenticate,*/ adminController.postAddUser);
+// Team management
+router.post('/addTeam', adminController.postAddTeam);
+router.get('/viewTeam', teamController.getViewTeam);
 
-router.post('/handleRequests',adminController.postHandleRequests);
+// Match management
+router.route('/match/:matchNo')
+  .get(adminController.getPreMatch)
+  .post(adminController.postSetMatch);
 
+router.get('/match/:matchNo/play', adminController.getMatch);
+router.post('/matchRes/:matchNo', adminController.postMatch);
 
-router.post('/addTeam',/*adminController.authenticate,*/adminController.postAddTeam);
+// Player management
+router.get('/delPlayer/:playerSerial', teamController.getDelPlayer);
+router.get('/:playerSerial', teamController.getViewPlayer);
 
-router.get('/viewTeam',/*adminController.authenticate,*/teamController.getViewTeam);
+// Logout
+router.get('/logout', adminController.getLogout);
 
-router.post('/addPlayer',teamController.postAddPlayer);
+// Error handling
+router.use((err, req, res, next) => {
+  console.error('Admin route error:', err);
+  res.status(500).render('admin/error', {
+    message: 'Operation failed',
+    user: req.session.user
+  });
+});
 
-router.post('/newSeason',adminController.postNewSeason);
-
-router.post('/setMatch',adminController.postSetMatch);
-
-router.get('/squad/:matchNo/:matchTeam',teamController.getSquad);
-
-router.post('/squad',teamController.postSquad); 
-
-router.get('/match/:matchNo/play',adminController.getMatch);
-
-router.get('/match/:matchNo',adminController.getPreMatch);
-
-router.post('/matchRes/:matchNo',adminController.postMatch);
-
-router.get('/matchRes/:matchNo',adminController.getMatchRes);
-
-
-router.get('/delPlayer/:playerSerial',teamController.getDelPlayer);
-
-router.get('/Logout',adminController.getLogout);
-
-router.get('/:playerSerial',teamController.getViewPlayer);
-
-module.exports= router;
+module.exports = router;
