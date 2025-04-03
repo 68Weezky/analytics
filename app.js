@@ -1,58 +1,84 @@
 // Importing necessary modules
-const express = require("express"); 
-const mongoose = require("mongoose"); 
-const path = require("path"); 
-const session = require('express-session'); 
-const bodyParser = require("body-parser"); 
-const cookieParser = require("cookie-parser")
+const express = require("express");
+const knex = require("./config/knex"); // Knex configuration file
+const path = require("path");
+const session = require('express-session');
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 
-// Importing route handlers
+// Import models with table creation functions
+const User = require("./models/user");
+const Team = require("./models/team");
+const League = require("./models/league");
+const Season = require("./models/season");
+const Match = require("./models/match");
+const Player = require("./models/player");
+
+// Import route handlers
 const adminRoutes = require("./routes/admin.js");
-const userRoutes = require("./routes/user.js"); 
+const userRoutes = require("./routes/user.js");
 
-// Setting up the server port and MongoDB connection URI
 const port = 8500;
-const mongoURI = 'mongodb://localhost:27017/sportsAnalytics';
-
-// Initializing the Express application
 const app = express();
 
-// Connecting to MongoDB using Mongoose
-mongoose.connect(mongoURI);
+// Database initialization function
+async function initializeDatabase() {
+  try {
+    // Test database connection
+    await knex.raw("SELECT 1");
+    console.log('Connected to MySQL database');
 
-// Handling MongoDB connection events
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:')); // Logs any connection errors
-db.once('open', () => {
-  console.log('Connected to MongoDB'); // Logs successful connection
+    // Create all tables in proper order to respect foreign key constraints
+    await League.createTable();
+    await User.createTable();
+    await Team.createTable();
+    await Season.createTable();
+    await Player.createTable();
+    await Match.createTable();
+
+    console.log('All tables created successfully');
+  } catch (err) {
+    console.error('Database initialization failed:', err);
+    process.exit(1); // Exit if database setup fails
+  }
+}
+
+// Initialize database and start server
+initializeDatabase().then(() => {
+  // Session middleware
+  app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }
+  }));
+
+  app.use(cookieParser());
+  app.set('view engine', 'ejs');
+  app.set('views', 'views');
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json());
+  app.use(express.static(path.join(__dirname, 'public')));
+
+  // Routes
+  app.use('/admin', adminRoutes);
+  app.use('/', userRoutes);
+
+  // Error handling
+  app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+  });
+
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
 });
 
-// Setting up session middleware
-app.use(session({
-  secret: 'keyboard cat', // Secret key for signing the session ID cookie
-  resave: false, // Prevents the session from being saved back to the store if it wasn't modified
-  saveUninitialized: true, // Saves uninitialized sessions (new but not modified)
-  cookie: { maxAge: 1000 * 60 * 60 * 24 } // Sets the session cookie to expire after 24 hours
-}));
-
-// Using cookie-parser middleware
-app.use(cookieParser());
-
-// Setting up the view engine (EJS) and views directory
-app.set('view engine', 'ejs'); 
-app.set('views', 'views');
-
-// Middleware for parsing URL-encoded request bodies
-app.use(bodyParser.urlencoded({ extended: false }));
-
-// Serving static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Mounting route handlers
-app.use('/admin', adminRoutes); // Routes for admin functionality
-app.use('/', userRoutes); // Routes for user functionality
-
-// Starting the server and listening on the specified port
-app.listen(port, () => {
-  console.log(`Listening at port ${port}`); // Logs the port the server is running on
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  knex.destroy().then(() => {
+    console.log('Database connection closed');
+    process.exit(0);
+  });
 });
