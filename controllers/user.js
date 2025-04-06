@@ -1,99 +1,156 @@
-const User= require("../models/user");
+const knex = require('../config/knex');
+const User = require("../models/user");
 const League = require("../models/league");
 const Team = require("../models/team");
 const Player = require("../models/player");
 const Season = require("../models/season");
 const Match = require("../models/match");
 
-module.exports.getStandings=async(req,res,next)=>{
-    let season=await Season.model.findOne({status:'Ongoing'})
-    let teams=await Team.model.find({})
-    let rank=[]
-    if (season) {
-    for(x of season.standings){
-        x.points=x.w*3+x.d
-        rank.push(x)
-    }
-    }
-    rank.sort((a, b) =>{
-        if(b.points===a.points){
-            return (b.gf-b.ga)-(a.gf-a.ga)
+module.exports = {
+    // Get Standings
+    getStandings: async (req, res) => {
+        try {
+            const [season, teams] = await Promise.all([
+                Season.query({ status: 'Ongoing' }),
+                Team.query({})
+            ]);
+
+            let rank = [];
+            if (season) {
+                rank = season.standings.map(x => ({
+                    ...x,
+                    points: x.w * 3 + x.d
+                })).sort((a, b) => {
+                    if (b.points === a.points) {
+                        return (b.gf - b.ga) - (a.gf - a.ga);
+                    }
+                    return b.points - a.points;
+                });
+            }
+
+            res.render('user/index', {
+                season,
+                teams,
+                rank,
+                title: "standings"
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Server Error");
         }
-        return b.points - a.points
-        });
+    },
 
-    res.render('user/index',
-    {
-        season:season,
-        teams:teams,
-        rank:rank,
-        title:"standings"
-    }
-    )
-}
+    // Get Teams List
+    getTeams: async (req, res) => {
+        try {
+            const [season, teams] = await Promise.all([
+                Season.query({ status: 'Ongoing' }),
+                Team.query({})
+            ]);
 
-module.exports.getTeams=async(req,res,next)=>{
-    let season=await Season.model.findOne({status:'Ongoing'})
-    let teams=await Team.model.find({})
-    res.render('user/teams',
-    {
-        season:season,
-        teams:teams,
-        title:"standings"
-    }
-    )
-}
+            res.render('user/teams', {
+                season,
+                teams,
+                title: "standings"
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Server Error");
+        }
+    },
 
-module.exports.getMatches=async(req,res,next)=>{
-    let season=await Season.model.findOne({status:'Ongoing'})
-    let teams=await Team.model.find({})
-    let matches=await Match.model.find({season:season.name})
-    res.render('user/matches',
-    {
-        season:season,
-        teams:teams,
-        matches:matches,
-        title:"Matches"
-    }
-    )
-}
+    // Get Matches List
+    getMatches: async (req, res) => {
+        try {
+            const season = await Season.query({ status: 'Ongoing' });
+            let matches = [];
+            let teams = [];
 
-module.exports.getStats=async(req,res,next)=>{
-    let season=await Season.model.findOne({status:'Ongoing'})
-    let teams=await Team.model.find({})
-    let matches=await Match.model.find({season:season.name})
-    let players=await Player.model.find({status:"Reg"})
-    let goalRank=[];
-    for(x of players){
-        goalRank.push({name:x.name, serial:x.serial, team:x.team, goals:x.goals.length})
-    }
-    goalRank.sort((a, b) => b.goals - a.goals);
-    res.render('user/stats',
-    {
-        season:season,
-        teams:teams,
-        matches:matches,
-        title:"Stats",
-        goalRank:goalRank
-    }
-    )
-}
+            if (season) {
+                [matches, teams] = await Promise.all([
+                    Match.query({ season: season.name }),
+                    Team.query({})
+                ]);
+            }
 
-module.exports.getViewTeam=async(req,res,next)=>{
-    let name = req.params.name;
-    let team =await Team.model.findOne({name:name})
-    let teams =await Team.model.find({})
-    let players =await Player.model.find({team:name})
-    let matches =await Match.model.find({$or:[{home:name},{away:name}]})
-    let season =await Season.model.findOne({status:"Ongoing"})
-    const shotsArray = Object.values(team.shots);
-    res.render('user/viewTeam',
-    {
-        matches:matches,
-        players:players,
-        team:team,
-        teams:teams,
-        season:season,
-        title:"teams"
-    })
-}
+            res.render('user/matches', {
+                season,
+                teams,
+                matches,
+                title: "Matches"
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Server Error");
+        }
+    },
+
+    // Get Statistics
+    getStats: async (req, res) => {
+        try {
+            const season = await Season.query({ status: 'Ongoing' });
+            let matches = [];
+            let teams = [];
+            let players = [];
+            let goalRank = [];
+
+            if (season) {
+                [matches, teams, players] = await Promise.all([
+                    Match.query({ season: season.name }),
+                    Team.query({}),
+                    Player.query({ status: "Reg" })
+                ]);
+            }
+
+            goalRank = players.map(player => ({
+                name: player.name,
+                serial: player.serial,
+                team: player.team,
+                goals: player.goals ? JSON.parse(player.goals).length : 0
+            })).sort((a, b) => b.goals - a.goals);
+
+            res.render('user/stats', {
+                season,
+                teams,
+                matches,
+                title: "Stats",
+                goalRank
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Server Error");
+        }
+    },
+
+    // View Team Details
+    getViewTeam: async (req, res) => {
+        try {
+            const name = req.params.name;
+            const [team, teams, players, season] = await Promise.all([
+                Team.query({ name }),
+                Team.query({}),
+                Player.query({ team: name }),
+                Season.query({ status: "Ongoing" })
+            ]);
+
+            let matches = [];
+            if (season) {
+                matches = await Match.query(
+                    knex.raw('home = ? OR away = ?', [name, name])
+                );
+            }
+
+            res.render('user/viewTeam', {
+                matches,
+                players,
+                team,
+                teams,
+                season,
+                title: "teams"
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Server Error");
+        }
+    }
+};

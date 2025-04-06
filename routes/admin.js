@@ -4,55 +4,109 @@ const adminController = require("../controllers/admin");
 const teamController = require("../controllers/team");
 
 // Session validation middleware
-const authenticate = (req, res, next) => {
-  if (!req.session.user) {
-    return res.redirect('/admin/login');
+const authenticate = async (req, res, next) => {
+  try {
+    if (!req.session.user) {
+      return res.redirect('/admin/login');
+    }
+    // Verify user still exists in database
+    const user = await User.query({ id: req.session.user.id });
+    if (!user) {
+      req.session.destroy();
+      return res.redirect('/admin/login');
+    }
+    next();
+  } catch (error) {
+    console.error('Authentication error:', error);
+    res.redirect('/admin/login');
   }
-  next();
 };
 
-// Public routes
-router.get('/login', adminController.getLogin);
-router.post('/login', adminController.postLogin);
+// Role-based access control middleware
+const authorize = (roles = []) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.session.user.rank)) {
+      return res.status(403).render('admin/error', {
+        message: 'Forbidden: Insufficient permissions',
+        user: req.session.user
+      });
+    }
+    next();
+  };
+};
 
-router.get('/register', adminController.getRegister);
-router.post('/register', adminController.postRegister);
+// Public routes (no authentication required)
+router.route('/login')
+  .get(adminController.getLogin)
+  .post(adminController.postLogin);
 
-// Protected routes
-router.use(authenticate); // Applies to all routes below
+router.route('/register')
+  .get(adminController.getRegister)
+  .post(adminController.postRegister);
 
-// Dashboard
+// Protected routes (require authentication)
+router.use(authenticate);
+
+// Dashboard routes
+router.get('/', adminController.getIndex);
 router.get('/dashboard', adminController.getIndex);
 
-// User management
-router.get('/addUser', adminController.getAddUser);
-router.post('/addUser', adminController.postAddUser);
+// User Management routes
+router.route('/users')
+  .get(authorize(['admin', 'super_admin']), adminController.getAddUser)
+  .post(authorize(['admin', 'super_admin']), adminController.postAddUser);
 
-// Team management
-router.post('/addTeam', adminController.postAddTeam);
-router.get('/viewTeam', teamController.getViewTeam);
+// Team Management routes
+router.route('/teams')
+  .post(authorize(['admin', 'super_admin']), adminController.postAddTeam);
 
-// Match management
-router.route('/match/:matchNo')
+router.get('/teams/:teamId', teamController.getViewTeam);
+
+// Player Management routes
+router.route('/players/:playerSerial')
+  .get(teamController.getViewPlayer)
+  .delete(authorize(['admin', 'super_admin', 'team_manager']), teamController.getDelPlayer);
+
+// Match Management routes
+router.route('/matches')
+  .post(authorize(['admin', 'super_admin']), adminController.postNewSeason);
+
+router.route('/matches/:matchNo')
   .get(adminController.getPreMatch)
-  .post(adminController.postSetMatch);
+  .post(authorize(['admin', 'super_admin', 'referee']), adminController.postSetMatch)
+  .put(authorize(['admin', 'super_admin', 'referee']), adminController.postMatch);
 
-router.get('/match/:matchNo/play', adminController.getMatch);
-router.post('/matchRes/:matchNo', adminController.postMatch);
+router.get('/matches/:matchNo/play', authorize(['admin', 'super_admin', 'referee']), adminController.getMatch);
+router.get('/matches/:matchNo/results', adminController.getMatchRes);
 
-// Player management
-router.get('/delPlayer/:playerSerial', teamController.getDelPlayer);
-router.get('/:playerSerial', teamController.getViewPlayer);
+// Squad Management routes
+router.route('/squads/:matchNo/:teamId')
+  .get(authorize(['admin', 'super_admin', 'team_manager']), teamController.getSquad)
+  .post(authorize(['admin', 'super_admin', 'team_manager']), teamController.postSquad);
 
-// Logout
+// Request Handling
+router.post('/requests/:playerSerial', authorize(['admin', 'super_admin']), adminController.postHandleRequests);
+
+// Session routes
 router.get('/logout', adminController.getLogout);
 
-// Error handling
+// Error handling middleware
 router.use((err, req, res, next) => {
   console.error('Admin route error:', err);
-  res.status(500).render('admin/error', {
-    message: 'Operation failed',
-    user: req.session.user
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).render('admin/error', {
+    message: err.message || 'Operation failed',
+    user: req.session.user,
+    statusCode
+  });
+});
+
+// 404 Not Found handler
+router.use((req, res) => {
+  res.status(404).render('admin/error', {
+    message: 'Page not found',
+    user: req.session.user,
+    statusCode: 404
   });
 });
 

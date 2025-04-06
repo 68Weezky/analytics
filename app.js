@@ -64,11 +64,23 @@ initializeDatabase().then(() => {
   app.use('/admin', adminRoutes);
   app.use('/', userRoutes);
 
-  // Error handling
-  app.use((err, req, res, next) => {
+app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send('Something broke!');
-  });
+    res.status(500).render('error', {
+        title: 'Error',
+        message: 'Something went wrong on our end.',
+        user: req.session.user
+    });
+});
+
+// 404 Handler (after all other routes)
+app.use((req, res) => {
+    res.status(404).render('error', {
+        title: 'Not Found',
+        message: 'The page you requested could not be found.',
+        user: req.session.user
+    });
+});
 
   app.listen(port, () => {
     console.log(`Server running on port ${port}`);
