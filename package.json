@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NewellSkk/sportsAnalytics.git"
+    "url": "git+https://github.com/68Weezky/analytics.git"
   },
-  "author": "NewellSkk",
+  "author": "68Weezky",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/NewellSkk/sportsAnalytics/issues"
+    "url": "https://github.com/68Weezky/analytics/issues"
   },
-  "homepage": "https://github.com/NewellSkk/sportsAnalytics#readme",
+  "homepage": "https://github.com/68Weezky/analytics#readme",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",

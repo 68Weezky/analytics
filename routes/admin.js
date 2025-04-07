@@ -2,23 +2,24 @@ const express = require('express');
 const router = express.Router();
 const adminController = require("../controllers/admin");
 const teamController = require("../controllers/team");
+const User = require("../models/user");
 
 // Session validation middleware
 const authenticate = async (req, res, next) => {
   try {
     if (!req.session.user) {
-      return res.redirect('/admin/login');
+      return res.redirect('/users/login');
     }
     // Verify user still exists in database
     const user = await User.query({ id: req.session.user.id });
     if (!user) {
       req.session.destroy();
-      return res.redirect('/admin/login');
+      return res.redirect('/users/login');
     }
     next();
   } catch (error) {
     console.error('Authentication error:', error);
-    res.redirect('/admin/login');
+    res.redirect('/users/login');
   }
 };
 

@@ -6,6 +6,8 @@ const Player = require("../models/player");
 const Season = require("../models/season");
 const Match = require("../models/match");
 const teamController = require("../controllers/team");
+// const leagueController = require("../controllers/league");
+// const adminController = require("../controllers/admin");
 
 module.exports = {
     // Authentication Middleware
@@ -16,7 +18,7 @@ module.exports = {
 
     // Login Handling
     getLogin: (req, res) => {
-        res.render('admin/sign-in', { message: "Admin Log in" });
+        res.render('admin/sign-in', { message: "Users Log in" });
     },
 
     postLogin: async (req, res) => {
@@ -28,14 +30,8 @@ module.exports = {
                 return res.render('admin/sign-in', { message: "ERROR! TRY AGAIN" });
             }
 
-            req.session.regenerate((err) => {
-                if (err) throw err;
-                req.session.user = result.user;
-                req.session.save(err => {
-                    if (err) throw err;
-                    res.redirect('/admin/');
-                });
-            });
+            req.session.user = result.user;
+            res.redirect('/users');
         } catch (err) {
             console.error(err);
             res.render('admin/sign-in', { message: "ERROR! TRY AGAIN" });
@@ -44,16 +40,17 @@ module.exports = {
 
     // Registration Handling
     getRegister: (req, res) => {
-        res.render('admin/register');
+        res.render('admin/register', {message: ""});
     },
-
+    /**
+    **/
     postRegister: async (req, res) => {
         try {
-            const { league: name, admin, email, password } = req.body;
-            const result = await League.store(name, admin, email.toLowerCase(), password);
-            
+            const { name, email, password } = req.body;
+            const result = await User.store(name, email, "user", password);
             if (result.success) {
-                res.redirect('/admin');
+                req.session.user = result.user;
+                res.redirect('/users');
             } else {
                 res.render('admin/register', { message: result.message });
             }
@@ -68,8 +65,13 @@ module.exports = {
         try {
             const user = await User.query({ id: req.session.user.id });
             
-            if (user.rank === "team_manager") {
-                return teamController.getViewTeam(req, res);
+            switch (user.rank) {
+                case "team_manager":
+                    return teamController.getViewTeam(req, res);
+                case "admin":
+                    // return adminController.getViewAdmin(req, res);
+                case "league_manager":
+                    // return leagueController.getViewLeague(req, res);
             }
 
             const [players, teams, season] = await Promise.all([
@@ -85,10 +87,10 @@ module.exports = {
                 user: req.session.user,
                 message: "",
                 path: "/index",
-                players,
-                teams,
-                season,
-                matches
+                players: players || [],
+                teams: teams || [],
+                season: season || [],
+                matches: matches || []
             });
         } catch (err) {
             console.error(err);

@@ -61,12 +61,12 @@ initializeDatabase().then(() => {
   app.use(express.static(path.join(__dirname, 'public')));
 
   // Routes
-  app.use('/admin', adminRoutes);
+  app.use('/users', adminRoutes);
   app.use('/', userRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).render('error', {
+    res.status(500).render('user/error', {
         title: 'Error',
         message: 'Something went wrong on our end.',
         user: req.session.user

@@ -8,6 +8,7 @@
 	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700|Lato:400,100,300,700,900' rel='stylesheet' type='text/css'>
 
 	<link rel="stylesheet" href="/css/signin.css">
+	<link rel="stylesheet" href="/css/main.css">
 
 </head>
 
@@ -22,18 +23,15 @@
                 <h2>Register</h2>
             </div>
             
-           <form action="/admin/register" method="post">
-                <label for="league">League</label>
+           <p class="error-message"><%= message %></p>
+           <form action="/users/register" method="post">
+                <label for="name">Name</label>
                 <br/>
-                <input type="text"  id="league" name="league">
-                <br/>
-                <label for="username">Admin Name</label>
-                <br/>
-                <input type="text" id="admin" name="admin">
+                <input type="text" id="admin" name="name">
                 <br/>
                 <label for="email">Email</label>
                 <br/>
-                <input type="text"  id="email" name="email">
+                <input type="email"  id="email" name="email">
                 <br/>
                 <label for="password">Password</label>
                 <br/>
@@ -43,7 +41,7 @@
                 <br/>
            </form>
             <br/>
-            <a href="/admin">Sign-in</a>
+            <a href="/users">Sign-in</a>
         </div>
     </div>
 </body>

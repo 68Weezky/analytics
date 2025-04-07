@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<title>play STATS - Sign In</title>
 
-	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700|Lato:400,100,300,700,900' rel='stylesheet' type='text/css'>
+	<!-- <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700|Lato:400,100,300,700,900' rel='stylesheet' type='text/css'> -->
 
 	<link rel="stylesheet" href="/css/signin.css">
 
@@ -21,14 +21,10 @@
 			<div class="box-header">
 				<h2>Log In</h2>
 			</div>
-			<form action="/admin" method="post">
-				<label for="league">League</label>
-				<br/>
-				<input type="text" id="league" name="league">
-				<br/>
+			<form action="/users/login" method="post">
 				<label for="email">Email</label>
 				<br/>
-				<input type="text" id="email" name="email">
+				<input type="email" id="email" name="email">
 				<br/>
 				<label for="password">Password</label>
 				<br/>
@@ -41,9 +37,7 @@
 				<br/>
 			</form>
 			<br/>
-			<a href="/admin/register">Register League</a>
-			
-			
+			<a href="/users/register">Register League</a>			
 		</div>
 	</div>
 </body>

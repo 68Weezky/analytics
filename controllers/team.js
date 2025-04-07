@@ -29,10 +29,11 @@ module.exports = {
                 title: "Team page",
                 user: req.session.user,
                 path: "/index",
-                players,
+                players: players || [],
+                teams: teams || [],
+                season: season || [],
+                matches: matches || [],
                 team,
-                teams,
-                matches,
                 message: ""
             });
         } catch (error) {

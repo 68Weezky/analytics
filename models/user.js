@@ -15,7 +15,6 @@ module.exports = class User {
                 table.increments('id').primary();
                 table.string('name').notNullable();
                 table.string('email').notNullable().unique();
-                table.string('league');
                 table.string('rank').notNullable();
                 table.string('password').notNullable();
                 table.string('team').nullable(); // Added for team association
@@ -23,7 +22,6 @@ module.exports = class User {
                 
                 // Add indexes for better query performance
                 table.index(['email']);
-                table.index(['league']);
                 table.index(['rank']);
             });
             console.log(`${this.tableName} table created`);
@@ -40,7 +38,7 @@ module.exports = class User {
      * @param {Object} [trx] - Optional transaction object
      * @returns {Promise<Object>} Result object
      */
-    static async store(name, email, league, rank, password, trx = knex) {
+    static async store(name, email, rank, password, trx = knex) {
         try {
             // Check if user already exists
             const existingUser = await trx(this.tableName)
@@ -58,7 +56,6 @@ module.exports = class User {
             const [userId] = await trx(this.tableName).insert({
                 name,
                 email,
-                league,
                 rank,
                 password: hashedPassword,
                 created_at: knex.fn.now(),
@@ -115,7 +112,7 @@ module.exports = class User {
             const passwordMatch = await bcrypt.compare(password, user.password);
             
             if (!passwordMatch) {
-                return { success: false, message: "Invalid password" };
+                return { success: false, message: "Unauthorized" };
             }
 
             // Return user data without password
