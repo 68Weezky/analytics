@@ -16,7 +16,7 @@ module.exports = {
 
     // Login Handling
     getLogin: (req, res) => {
-        res.render('admin/sign-in', { message: " " });
+        res.render('admin/sign-in', { message: "Admin Log in" });
     },
 
     postLogin: async (req, res) => {

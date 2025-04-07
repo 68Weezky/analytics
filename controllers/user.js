@@ -42,22 +42,44 @@ module.exports = {
 
     // Get Teams List
     getTeams: async (req, res) => {
-        try {
-            const [season, teams] = await Promise.all([
-                Season.query({ status: 'Ongoing' }),
-                Team.query({})
-            ]);
+    try {
+        const [season, teams] = await Promise.all([
+            Season.query({ status: 'Ongoing' }) || null,
+            Team.query({}) || [] // Fallback to empty array
+        ]);
 
-            res.render('user/teams', {
-                season,
-                teams,
-                title: "standings"
-            });
-        } catch (error) {
-            console.error(error);
-            res.status(500).send("Server Error");
-        }
-    },
+        // Debug logging
+        console.log('Teams data:', teams);
+        console.log('Is array:', Array.isArray(teams));
+
+        res.render('user/teams', {
+            season,
+            teams: Array.isArray(teams) ? teams : [], // Double safety
+            title: "Teams List" // More descriptive title
+        });
+    } catch (error) {
+        console.error("Teams Error:", error);
+        res.status(500).render('error', { 
+            message: "Failed to load teams" 
+        });
+    }
+},
+    //     try {
+    //         const [season, teams] = await Promise.all([
+    //             Season.query({ status: 'Ongoing' }),
+    //             Team.query({})
+    //         ]);
+
+    //         res.render('user/teams', {
+    //             season,
+    //             teams,
+    //             title: "standings"
+    //         });
+    //     } catch (error) {
+    //         console.error(error);
+    //         res.status(500).send("Server Error");
+    //     }
+    // },
 
     // Get Matches List
     getMatches: async (req, res) => {

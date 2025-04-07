@@ -21,7 +21,7 @@ module.exports = class Team {
                 table.json('goals').defaultTo(JSON.stringify([]));
                 table.json('shots').defaultTo(JSON.stringify([]));
                 table.timestamps(true, true);
-                
+
                 // Add indexes
                 table.index(['league']);
                 table.index(['name']);
@@ -67,11 +67,11 @@ module.exports = class Team {
 
                 // Create manager user and associate with team
                 const userResult = await User.store(
-                    manager, 
-                    email, 
-                    league, 
-                    "team_manager", 
-                    password, 
+                    manager,
+                    email,
+                    league,
+                    "team_manager",
+                    password,
                     trx  // Pass transaction
                 );
 
@@ -84,14 +84,14 @@ module.exports = class Team {
                     .where({ email })
                     .update({ team: name });
 
-                return { 
-                    success: true, 
-                    team: { 
-                        id: teamId, 
-                        name, 
+                return {
+                    success: true,
+                    team: {
+                        id: teamId,
+                        name,
                         league,
-                        manager 
-                    } 
+                        manager
+                    }
                 };
             });
         } catch (error) {
@@ -137,20 +137,20 @@ module.exports = class Team {
             // Convert array fields to JSON strings
             const fieldsToJson = ['fouls', 'goals', 'shots'];
             const processedUpdates = {};
-            
+
             for (const [key, value] of Object.entries(updates)) {
-                processedUpdates[key] = fieldsToJson.includes(key) 
-                    ? JSON.stringify(value) 
+                processedUpdates[key] = fieldsToJson.includes(key)
+                    ? JSON.stringify(value)
                     : value;
             }
 
             const count = await knex(this.tableName)
                 .where({ id })
                 .update(processedUpdates);
-            
-            return { 
+
+            return {
                 success: count > 0,
-                updated: count 
+                updated: count
             };
         } catch (error) {
             console.error("Update Error:", error);
@@ -191,10 +191,10 @@ module.exports = class Team {
             const count = await knex(this.tableName)
                 .where({ id })
                 .del();
-            
-            return { 
+
+            return {
                 success: count > 0,
-                deleted: count 
+                deleted: count
             };
         } catch (error) {
             console.error("Delete Error:", error);
