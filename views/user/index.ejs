@@ -1,167 +1,117 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HOCKEY K.E</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="min-h-screen flex flex-col bg-gray-100">
+  <!-- Header -->
+  <header class="bg-blue-800 text-white p-4 flex justify-between items-center shadow-md">
+    <div class="flex items-center space-x-3">
+      <div class="cursor-pointer hover:rotate-20 transition-transform">
+        <i class="fas fa-hockey-puck text-2xl"></i>
+      </div>
+      <h1 class="text-2xl font-bold">HOCKEY K.E</h1>
+    </div>
+    
+    <!-- Navigation Links -->
+    <div class="flex space-x-4">
+      <a 
+        href="../auth/signup" 
+        class="px-4 py-2 bg-white text-blue-800 rounded-md font-medium hover:bg-blue-100 transition flex items-center"
+      >
+        Sign Up <i class="fas fa-arrow-right ml-2"></i>
+      </a>
+      <a 
+        href="../auth/login" 
+        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition flex items-center"
+      >
+        Sign In <i class="fas fa-arrow-right ml-2"></i>
+      </a>
+    </div>
+  </header>
 
-<html  lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <!-- Main Content -->
+  <main class="flex-grow flex flex-col md:flex-row items-center justify-center p-6">
+    <!-- Image Section -->
+    <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8 opacity-0 animate-fade-in-left">
+      <img 
+        src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" 
+        alt="Hockey action shot"
+        class="rounded-lg shadow-xl w-full max-h-96 object-cover"
+      />
+    </div>
+    
+    <!-- Text Section -->
+    <div class="md:w-1/2 bg-white p-8 rounded-lg shadow-lg opacity-0 animate-fade-in-right">
+      <h2 class="text-3xl font-bold text-blue-800 mb-4">
+        Join Kenya's Premier Hockey League
+      </h2>
+      <p class="text-gray-700 mb-4">
+        Experience the thrill of competitive hockey with the fastest growing league in East Africa. 
+        Our league brings together the best talent from across the region for heart-pounding action.
+      </p>
+      <p class="text-gray-700 mb-6">
+        Whether you're a seasoned player or just starting out, we have divisions for all skill levels. 
+        Register today and be part of Kenya's hockey revolution!
+      </p>
+      <div class="space-x-4">
+        <a 
+          href="../auth/signup" 
+          class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition transform hover:scale-105"
+        >
+          Join Now
+        </a>
+        <a 
+          href="/about" 
+          class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-md font-medium transition transform hover:scale-105"
+        >
+          Learn More
+        </a>
+      </div>
+    </div>
+  </main>
 
-    <title><%= title %></title>
+  <!-- Footer -->
+  <footer class="bg-blue-900 text-white p-4 text-center">
+    <p>© <%- new Date().getFullYear() %> Hockey K.E - All Rights Reserved</p>
+  </footer>
 
-    <meta name="description" content="" />
-
-
- <!-- CALENDER CSS -->
-    <!-- <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet"> -->
-	  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
-	  <link rel="stylesheet" href="/calender/css/style.css">
-	  <link rel="stylesheet" href="/calender/css/bootstrap-datetimepicker.min.css">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
-      rel="stylesheet" />
-
-    <link rel="stylesheet" href="/assets/vendor/fonts/boxicons.css" />
-
-    <!-- Core CSS -->
-    <link rel="stylesheet" href="/assets/vendor/css/core.css" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
-    <link rel="stylesheet" href="/assets/css/demo.css" />
-    <!-- Page CSS -->
-
-    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
-
-   
-    <!-- Helpers -->
-    <script src="/assets/vendor/js/helpers.js"></script>
-    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
-    <script src="/assets/js/config.js"></script>
-  </head>
-
-  <body>
-          <!-- Content wrapper -->
-          <div class="content-wrapper">
-            <!-- Content -->
-
-            <div class="container-xxl flex-grow-1 container-p-y" style="background: url('../../images/a.jpg') no-repeat center center fixed;background-size: cover;">
-              <div class="row">
-                <div class="col-lg-12 mb-4 order-0">
-                  <div class="card bg-dark">
-                    <div class="d-flex align-items-end row">
-                      <div class="col-sm-7 text-sm-left">
-                        <span class="d-lg-inline-block">
-                          <img
-                            src="/images/field-hockey.png"
-                            height="140"
-                            width="140"
-                            alt="View Badge User"
-                          />
-                        </span>  
-                          <span class="white d-lg-inline-block">
-                              <b class="f1 f-headline i">
-                                Masters
-                              </b> 
-                          </span>
-                         
-                      </div>
-       
-                      
-                     
-                    </div>
-
-                </div>
-                <%- include('../includes/userNav.ejs') %>
-                </div>
-
-                <div class="card">
-                    <h5 class="card-header">League Table</h5>
-                    <div class="table-responsive text-nowrap">
-                      <table class="table" id="leagueTable">
-                        <thead>
-                          <tr>
-                            <th>Pos</th>
-                            <th>Team</th>
-                            <th>Win</th>
-                            <th>Draw</th>
-                            <th>Loss</th>
-                            <th>GF</th>
-                            <th>GA</th>
-                            <th>GD</th>
-                            <th>Points</th>
-                          </tr>
-                        </thead>
-                        <tbody class="table-border-bottom-0 ">
-                         
-                            <%
-                            let pos=0
-                            for(t of rank){
-                              pos+=1;
-                          %>  
-                            <tr >
-                                <td><%=pos%></td>
-                                <td>
-                                    <% let A= teams.find((team)=>{
-                                        if(team.name== t.team )
-                                        return team;
-                                       }) %>
-                                      <div class="avatar flex-shrink-0 me-3">
-                                        <img src="<%= A.badge %>" alt="User" class="rounded" />
-                                        <%= t.team %>
-                                      </div>
-                                </td>
-                                <td><%= t.w %></td>
-                                <td><%= t.d %></td>
-                                <td><%= t.l %></td>
-                                <td><%= t.gf %></td>
-                                <td><%= t.ga %></td>
-                                <td><%= t.gf-t.ga %></td>
-                                <td><%= t.points %></td>
-                            </tr>
-                          <% } %>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-               
-                </div>
-
-                </div>  
-  
-
-              </div>
-            </div>
-            <!-- / Content -->
-            <div class="content-backdrop fade"></div>
-          <!-- Content wrapper -->
-
-     <!-- Core JS -->
-    <!-- build:js assets/vendor/js/core.js -->
-
-    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
-    <script src="/assets/vendor/libs/popper/popper.js"></script>
-    <script src="/assets/vendor/js/bootstrap.js"></script>
-    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-    <script src="/assets/vendor/js/menu.js"></script>
-
-    <!-- endbuild -->
-
-    <!-- Vendors JS -->
-    <script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
-
-    <!-- Main JS -->
-    <script src="/assets/js/main.js"></script>
-
-    <!-- Page JS -->
-    <script src="/assets/js/dashboards-analytics.js"></script>
-
-    <!-- Place this tag in your head or just before your close body tag. -->
-    <script async defer src="https://buttons.github.io/buttons.js"></script>
-
-  
-  </body>
+  <style>
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .animate-fade-in-left {
+      animation: fadeInLeft 0.5s ease-out forwards;
+      animation-delay: 0.2s;
+    }
+    
+    .animate-fade-in-right {
+      animation: fadeInRight 0.5s ease-out forwards;
+      animation-delay: 0.4s;
+    }
+  </style>
+</body>
 </html>

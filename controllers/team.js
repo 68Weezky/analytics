@@ -30,10 +30,9 @@ module.exports = {
                 user: req.session.user,
                 path: "/index",
                 players: players || [],
-                teams: teams || [],
+                team: team || [],
                 season: season || [],
                 matches: matches || [],
-                team,
                 message: ""
             });
         } catch (error) {
@@ -62,8 +61,8 @@ module.exports = {
                     title: "Team page",
                     user: req.session.user,
                     path: "/index",
-                    players,
-                    teams,
+                    players: players || [],
+                    teams: teams || [],
                     message: "INVALID DETAILS"
                 });
             }
@@ -83,7 +82,7 @@ module.exports = {
                     title: "Player",
                     user: req.session.user,
                     path: "/index",
-                    player
+                    player: player || []
                 });
             } else {
                 res.redirect("/admin/");
@@ -122,9 +121,9 @@ module.exports = {
             ]);
 
             res.render("admin/squad", {
-                players,
-                team,
-                match
+                players: players || [],
+                team: team || [],
+                match: match || []
             });
         } catch (error) {
             console.error(error);

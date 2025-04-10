@@ -6,8 +6,9 @@ const Player = require("../models/player");
 const Season = require("../models/season");
 const Match = require("../models/match");
 const teamController = require("../controllers/team");
-// const leagueController = require("../controllers/league");
-// const adminController = require("../controllers/admin");
+const userController = require("../controllers/user");
+const leagueController = require("../controllers/league");
+const adminController = require("../controllers/admin");
 
 module.exports = {
     // Authentication Middleware
@@ -68,10 +69,10 @@ module.exports = {
             switch (user.rank) {
                 case "team_manager":
                     return teamController.getViewTeam(req, res);
-                case "admin":
-                    // return adminController.getViewAdmin(req, res);
+                case "user":
+                    return userController.getStandings(req, res);
                 case "league_manager":
-                    // return leagueController.getViewLeague(req, res);
+                    return leagueController.getIndex(req, res);
             }
 
             const [players, teams, season] = await Promise.all([
@@ -125,319 +126,49 @@ module.exports = {
             res.redirect('/admin/addUser?exist=True');
         }
     },
-
-    // Team Management
-    postAddTeam: async (req, res) => {
-        try {
-            const { name: team, manager: tm, email, league, password, badge } = req.body;
-            await Team.store(team, league, tm, email, password, badge);
-            res.redirect('/admin');
-        } catch (err) {
-            console.error(err);
-            res.redirect('/admin');
+    // Add this to your module.exports
+getUsers: async (req, res) => {
+    try {
+        const users = await User.query({});
+        res.render('admin/users', {
+            title: "Manage Users",
+            user: req.session.user,
+            users: users || [],
+            message: ""
+        });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin');
+    }
+},
+postUpdateUserRank: async (req, res) => {
+    try {
+        const { userId, newRank } = req.body;
+        const currentUser = req.session.user;
+        
+        // Only allow admins to change ranks
+        if (currentUser.rank !== 'admin') {
+            return res.status(403).send("Unauthorized");
         }
-    },
-
-    // Player Request Handling
-    postHandleRequests: async (req, res) => {
-        try {
-            const { serial, action } = req.body;
-            const status = action === 'Approve' ? 'Reg' : 'Declined';
-            await Player.update({ serial }, { status });
-            res.redirect("/admin/");
-        } catch (err) {
-            console.error(err);
-            res.redirect("/admin/");
+        
+        // Validate the new rank
+        const validRanks = ['user', 'team_manager', 'league_manager', 'admin'];
+        if (!validRanks.includes(newRank)) {
+            return res.status(400).send("Invalid rank");
         }
-    },
-
-    // Season Management
-    postNewSeason: async (req, res) => {
-        try {
-            const { season, league } = req.body;
-            await Season.store(season, league);
-            res.redirect("/admin");
-        } catch (err) {
-            console.error(err);
-            res.redirect("/admin");
+        
+        // Prevent demoting yourself
+        if (userId === currentUser.id && newRank !== 'admin') {
+            return res.status(400).send("Cannot demote yourself");
         }
-    },
-
-    // Match Management
-    postSetMatch: async (req, res) => {
-        try {
-            const { match: matchId, matchTime: time } = req.body;
-            if (!matchId) return res.redirect("/admin");
-
-            const season = await Season.query({ status: "Ongoing" });
-            const matchData = season.matches[matchId];
-            
-            const setMatch = {
-                home: matchData.home,
-                away: matchData.away,
-                id: matchData.id,
-                time: time
-            };
-
-            await knex.transaction(async trx => {
-                season.matches[matchId] = setMatch;
-                await Season.update(season.id, { matches: season.matches }, trx);
-                await Match.store(
-                    setMatch.id,
-                    setMatch.home,
-                    setMatch.away,
-                    setMatch.time,
-                    season.name,
-                    trx
-                );
-            });
-
-            res.redirect("back");
-        } catch (err) {
-            console.error(err);
-            res.redirect("/admin");
-        }
-    },
-
-    // Match Preparation
-    getPreMatch: async (req, res) => {
-        try {
-            const matchNo = req.params.matchNo;
-            const season = await Season.query({ status: "Ongoing" });
-            const match = await Match.query({ number: matchNo, season: season.name });
-            const [hTeam, aTeam] = await Promise.all([
-                Team.query({ name: match.home }),
-                Team.query({ name: match.away })
-            ]);
-
-            res.render('admin/preMatch', {
-                match,
-                season,
-                hTeam,
-                aTeam
-            });
-        } catch (err) {
-            console.error(err);
-            res.redirect('/admin');
-        }
-    },
-
-    // Match Handling
-    getMatch: async (req, res) => {
-        try {
-            const matchNo = req.params.matchNo;
-            const season = await Season.query({ status: "Ongoing" });
-            const match = await Match.query({ number: matchNo, season: season.name });
-            
-            if (match.score || match.hSquad.length < 11 || match.aSquad.length < 11) {
-                return res.redirect('/admin');
-            }
-
-            const [hTeam, aTeam] = await Promise.all([
-                Team.query({ name: match.home }),
-                Team.query({ name: match.away })
-            ]);
-
-            res.render('admin/match', {
-                match,
-                season,
-                hTeam,
-                aTeam
-            });
-        } catch (err) {
-            console.error(err);
-            res.redirect('/admin');
-        }
-    },
-
-    // Match Results
-    getMatchRes: async (req, res) => {
-        try {
-            const matchNo = req.params.matchNo;
-            const season = await Season.query({ status: "Ongoing" });
-            const match = await Match.query({ number: matchNo, season: season.name });
-            
-            if (!match.score) {
-                return res.redirect('/admin');
-            }
-
-            const [hTeam, aTeam] = await Promise.all([
-                Team.query({ name: match.home }),
-                Team.query({ name: match.away })
-            ]);
-
-            const hShots = match.shots.filter(x => x.team === match.home);
-            const aShots = match.shots.filter(x => x.team === match.away);
-            const hGoals = match.goals.filter(x => x.team === match.home);
-            const aGoals = match.goals.filter(x => x.team === match.away);
-
-            res.render('admin/matchRes', {
-                match,
-                season,
-                hTeam,
-                aTeam,
-                aShots,
-                aGoals,
-                hShots,
-                hGoals
-            });
-        } catch (err) {
-            console.error(err);
-            res.redirect('/admin');
-        }
-    },
-
-    // Match Processing
-    postMatch: async (req, res) => {
-        try {
-            const matchNo = req.params.matchNo;
-            const { goals, fouls, shots } = req.body;
-            const parsedGoals = JSON.parse(goals);
-            const parsedFouls = JSON.parse(fouls);
-            const parsedShots = JSON.parse(shots);
-
-            const season = await Season.query({ status: 'Ongoing' });
-            const match = await Match.query({ number: matchNo, season: season.name });
-            const score = { home: 0, away: 0 };
-
-            await knex.transaction(async trx => {
-                // Process shots
-                for (const shot of parsedShots) {
-                    const { player, team } = shot;
-                    shot.season = season.name;
-                    shot.match = matchNo;
-
-                    // Update player shots
-                    await Player.update(
-                        { serial: player },
-                        { shots: knex.raw('JSON_ARRAY_APPEND(shots, "$", ?)', [shot]) },
-                        trx
-                    );
-
-                    // Update team shots
-                    await Team.update(
-                        { name: team },
-                        { shots: knex.raw('JSON_ARRAY_APPEND(shots, "$", ?)', [shot]) },
-                        trx
-                    );
-
-                    // Update season shots
-                    const seasonShot = { ...shot };
-                    delete seasonShot.season;
-                    await Season.update(
-                        { id: season.id },
-                        { shots: knex.raw('JSON_ARRAY_APPEND(shots, "$", ?)', [seasonShot]) },
-                        trx
-                    );
-                }
-
-                // Process goals
-                for (const goal of parsedGoals) {
-                    goal.season = season.name;
-                    goal.match = matchNo;
-                    const { team } = goal;
-                    team === match.home ? score.home++ : score.away++;
-
-                    // Update player goals
-                    await Player.update(
-                        { serial: goal.player },
-                        { goals: knex.raw('JSON_ARRAY_APPEND(goals, "$", ?)', [goal]) },
-                        trx
-                    );
-
-                    // Update team goals
-                    await Team.update(
-                        { name: team },
-                        { goals: knex.raw('JSON_ARRAY_APPEND(goals, "$", ?)', [goal]) },
-                        trx
-                    );
-
-                    // Update season goals
-                    const seasonGoal = { ...goal };
-                    delete seasonGoal.season;
-                    await Season.update(
-                        { id: season.id },
-                        { goals: knex.raw('JSON_ARRAY_APPEND(goals, "$", ?)', [seasonGoal]) },
-                        trx
-                    );
-                }
-
-                // Process fouls
-                for (const foul of parsedFouls) {
-                    foul.match = matchNo;
-                    foul.season = season.name;
-                    const { player, team } = foul;
-
-                    // Update player fouls
-                    await Player.update(
-                        { serial: player },
-                        { fouls: knex.raw('JSON_ARRAY_APPEND(fouls, "$", ?)', [foul]) },
-                        trx
-                    );
-
-                    // Update team fouls
-                    await Team.update(
-                        { name: team },
-                        { fouls: knex.raw('JSON_ARRAY_APPEND(fouls, "$", ?)', [foul]) },
-                        trx
-                    );
-                }
-
-                // Update match record
-                await Match.update(
-                    match.id,
-                    {
-                        goals: parsedGoals,
-                        shots: parsedShots,
-                        fouls: parsedFouls,
-                        score
-                    },
-                    trx
-                );
-
-                // Update standings
-                const standings = [...season.standings];
-                const hIndex = standings.findIndex(x => x.team === match.home);
-                const aIndex = standings.findIndex(x => x.team === match.away);
-                
-                if (hIndex !== -1 && aIndex !== -1) {
-                    const h = standings[hIndex];
-                    const a = standings[aIndex];
-                    
-                    h.gf += score.home;
-                    h.ga += score.away;
-                    a.gf += score.away;
-                    a.ga += score.home;
-                    
-                    if (score.home === score.away) {
-                        h.d += 1;
-                        a.d += 1;
-                    } else if (score.home > score.away) {
-                        h.w += 1;
-                        a.l += 1;
-                    } else {
-                        h.l += 1;
-                        a.w += 1;
-                    }
-                    
-                    standings[hIndex] = h;
-                    standings[aIndex] = a;
-                    
-                    await Season.update(
-                        { id: season.id },
-                        { standings },
-                        trx
-                    );
-                }
-            });
-
-            res.redirect("/admin");
-        } catch (err) {
-            console.error(err);
-            res.redirect("/admin");
-        }
-    },
-
+        
+        await User.update({ id: userId }, { rank: newRank });
+        res.redirect('/admin/users');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin/users');
+    }
+},
     // Logout
     getLogout: (req, res) => {
         req.session.user = null;

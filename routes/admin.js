@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require("../controllers/admin");
+const leagueController = require("../controllers/league");
 const teamController = require("../controllers/team");
 const User = require("../models/user");
 
@@ -16,6 +17,8 @@ const authenticate = async (req, res, next) => {
       req.session.destroy();
       return res.redirect('/users/login');
     }
+    // Attach fresh user data to request
+    req.user = user;
     next();
   } catch (error) {
     console.error('Authentication error:', error);
@@ -26,10 +29,11 @@ const authenticate = async (req, res, next) => {
 // Role-based access control middleware
 const authorize = (roles = []) => {
   return (req, res, next) => {
-    if (!roles.includes(req.session.user.rank)) {
+    if (!roles.includes(req.user.rank)) {
       return res.status(403).render('admin/error', {
         message: 'Forbidden: Insufficient permissions',
-        user: req.session.user
+        user: req.user,
+        statusCode: 403
       });
     }
     next();
@@ -54,39 +58,58 @@ router.get('/dashboard', adminController.getIndex);
 
 // User Management routes
 router.route('/users')
-  .get(authorize(['admin', 'super_admin']), adminController.getAddUser)
-  .post(authorize(['admin', 'super_admin']), adminController.postAddUser);
+  .get(authorize(['admin']), adminController.getUsers)  // Only admin can view all users
+  .post(authorize(['admin']), adminController.postAddUser);  // Only admin can add users
+
+router.route('/users/update-rank')
+  .post(authorize(['admin']), adminController.postUpdateUserRank);  // Only admin can update ranks
 
 // Team Management routes
 router.route('/teams')
-  .post(authorize(['admin', 'super_admin']), adminController.postAddTeam);
+  .post(authorize(['admin', 'league_manager']), leagueController.postAddTeam);  // Admin and league managers can add teams
 
-router.get('/teams/:teamId', teamController.getViewTeam);
+router.get('/teams/:teamId', 
+  authorize(['admin', 'league_manager', 'team_manager']), 
+  teamController.getViewTeam);
 
 // Player Management routes
 router.route('/players/:playerSerial')
-  .get(teamController.getViewPlayer)
-  .delete(authorize(['admin', 'super_admin', 'team_manager']), teamController.getDelPlayer);
+  .get(authorize(['admin', 'league_manager', 'team_manager']), 
+    teamController.getViewPlayer)
+  .delete(authorize(['admin', 'team_manager']), 
+    teamController.getDelPlayer);
 
 // Match Management routes
 router.route('/matches')
-  .post(authorize(['admin', 'super_admin']), adminController.postNewSeason);
+  .post(authorize(['admin', 'league_manager']), 
+    leagueController.postNewSeason);
 
 router.route('/matches/:matchNo')
-  .get(adminController.getPreMatch)
-  .post(authorize(['admin', 'super_admin', 'referee']), adminController.postSetMatch)
-  .put(authorize(['admin', 'super_admin', 'referee']), adminController.postMatch);
+  .get(leagueController.getPreMatch)
+  .post(authorize(['admin', 'league_manager']), 
+    leagueController.postSetMatch)
+  .put(authorize(['admin']), 
+    leagueController.postMatch);
 
-router.get('/matches/:matchNo/play', authorize(['admin', 'super_admin', 'referee']), adminController.getMatch);
-router.get('/matches/:matchNo/results', adminController.getMatchRes);
+router.get('/matches/:matchNo/play', 
+  authorize(['admin']), 
+  leagueController.getMatch);
+
+router.get('/matches/:matchNo/results', 
+  authorize(['admin', 'league_manager', 'team_manager']), 
+  leagueController.getMatchRes);
 
 // Squad Management routes
 router.route('/squads/:matchNo/:teamId')
-  .get(authorize(['admin', 'super_admin', 'team_manager']), teamController.getSquad)
-  .post(authorize(['admin', 'super_admin', 'team_manager']), teamController.postSquad);
+  .get(authorize(['admin', 'team_manager']), 
+    teamController.getSquad)
+  .post(authorize(['admin', 'team_manager']), 
+    teamController.postSquad);
 
 // Request Handling
-router.post('/requests/:playerSerial', authorize(['admin', 'super_admin']), adminController.postHandleRequests);
+router.post('/requests/:playerSerial', 
+  authorize(['admin', 'league_manager']), 
+  leagueController.postHandleRequests);
 
 // Session routes
 router.get('/logout', adminController.getLogout);
@@ -97,7 +120,7 @@ router.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   res.status(statusCode).render('admin/error', {
     message: err.message || 'Operation failed',
-    user: req.session.user,
+    user: req.user,
     statusCode
   });
 });
@@ -106,7 +129,7 @@ router.use((err, req, res, next) => {
 router.use((req, res) => {
   res.status(404).render('admin/error', {
     message: 'Page not found',
-    user: req.session.user,
+    user: req.user,
     statusCode: 404
   });
 });

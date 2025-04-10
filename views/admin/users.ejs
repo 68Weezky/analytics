@@ -1,0 +1,49 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+    <h2>Manage Users</h2>
+    
+    <% if (message) { %>
+        <div class="alert alert-info"><%= message %></div>
+    <% } %>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Current Rank</th>
+                <th>Change Rank</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(u => { %>
+                <tr>
+                    <td><%= u.name %></td>
+                    <td><%= u.email %></td>
+                    <td><%= u.rank %></td>
+                    <td>
+                        <% if (user.rank === 'admin' && user.id !== u.id) { %>
+                            <form action="/admin/users/update-rank" method="POST">
+                                <input type="hidden" name="userId" value="<%= u.id %>">
+                                <select name="newRank" class="form-control">
+                                    <option value="user" <%= u.rank === 'user' ? 'selected' : '' %>>User</option>
+                                    <option value="team_manager" <%= u.rank === 'team_manager' ? 'selected' : '' %>>Team Manager</option>
+                                    <option value="league_manager" <%= u.rank === 'league_manager' ? 'selected' : '' %>>League Manager</option>
+                                    <option value="admin" <%= u.rank === 'admin' ? 'selected' : '' %>>Admin</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary mt-2">Update</button>
+                            </form>
+                        <% } else if (user.id === u.id) { %>
+                            <em>(You)</em>
+                        <% } else { %>
+                            <em>No permission</em>
+                        <% } %>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>API Docs - HOCKEY K.E</title>
+  <%- include('../includes/head') %>
+  <style>
+    .endpoint { margin-bottom: 2rem; padding: 1rem; background: #f5f5f5; border-radius: 5px; }
+    .method { font-weight: bold; }
+    .get { color: #2ecc71; }
+    .post { color: #3498db; }
+  </style>
+</head>
+<body>
+  <%- include('../includes/header') %>
+  
+  <div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-6">API Documentation</h1>
+    
+    <div class="endpoint">
+      <h3 class="method get">GET /user/me</h3>
+      <p>Get current user data</p>
+      <p class="mt-2"><strong>Headers:</strong></p>
+      <code>Authorization: Bearer [token]</code>
+    </div>
+
+    <div class="endpoint">
+      <h3 class="method post">POST /auth/login</h3>
+      <p>User login</p>
+      <pre>{
+  "email": "user@example.com",
+  "password": "yourpassword"
+}</pre>
+    </div>
+  </div>
+
+  <%- include('../includes/footer') %>
+</body>
+</html>

@@ -1,12 +1,13 @@
-// Importing necessary modules
 const express = require("express");
-const knex = require("./config/knex"); // Knex configuration file
 const path = require("path");
 const session = require('express-session');
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
-// Import models with table creation functions
+// Initialize Knex directly
+const knex = require("./config/knex");
+
+// Import models (now using plain Knex)
 const User = require("./models/user");
 const Team = require("./models/team");
 const League = require("./models/league");
@@ -14,83 +15,117 @@ const Season = require("./models/season");
 const Match = require("./models/match");
 const Player = require("./models/player");
 
-// Import route handlers
-const adminRoutes = require("./routes/admin.js");
-const userRoutes = require("./routes/user.js");
+// Import routes
+const adminRoutes = require("./routes/admin");
+const userRoutes = require("./routes/user");
+const authRoutes = require("./routes/auth");
 
-const port = 8500;
+const port = process.env.PORT || 8500;
 const app = express();
 
-// Database initialization function
+// Database initialization
 async function initializeDatabase() {
-  try {
-    // Test database connection
-    await knex.raw("SELECT 1");
-    console.log('Connected to MySQL database');
+    try {
+        // Test connection
+        await knex.raw("SELECT 1");
+        console.log('✅ Database connection established');
 
-    // Create all tables in proper order to respect foreign key constraints
-    await League.createTable();
-    await User.createTable();
-    await Team.createTable();
-    await Season.createTable();
-    await Player.createTable();
-    await Match.createTable();
+        // Check if tables exist, create if needed
+        const hasUsers = await knex.schema.hasTable('users');
+        if (!hasUsers) {
+            await knex.schema.createTable('users', (table) => {
+                table.increments('id').primary();
+                table.string('name').notNullable();
+                table.string('email').unique().notNullable();
+                table.string('password').notNullable();
+                table.string('rank').defaultTo('user');
+                table.timestamps(true, true);
+            });
+            console.log('✅ Created users table');
+        }
 
-    console.log('All tables created successfully');
-  } catch (err) {
-    console.error('Database initialization failed:', err);
-    process.exit(1); // Exit if database setup fails
-  }
+        // Add similar checks for other tables...
+
+    } catch (err) {
+        console.error('❌ Database initialization failed:', err);
+        process.exit(1);
+    }
 }
+// Set view engine
+app.set('view engine', 'ejs'); // Or 'pug', 'handlebars', etc.
 
-// Initialize database and start server
-initializeDatabase().then(() => {
-  // Session middleware
-  app.use(session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 }
-  }));
+// Set views directory
+app.set('views', path.join(__dirname, 'views'));
 
-  app.use(cookieParser());
-  app.set('view engine', 'ejs');
-  app.set('views', 'views');
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.json());
-  app.use(express.static(path.join(__dirname, 'public')));
 
-  // Routes
-  app.use('/users', adminRoutes);
-  app.use('/', userRoutes);
+// Middleware setup
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(cookieParser());
 
+// Set static files directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Set authentication routes
+app.use('/auth', authRoutes);
+
+// Set user routes
+app.use('/', userRoutes);
+
+// Set admin routes
+app.use('/admin', adminRoutes);
+
+// Health check endpoint
+app.get('/health', async (req, res) => {
+    try {
+        await knex.raw('SELECT 1');
+        res.json({
+            status: 'ok',
+            database: 'connected'
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            error: error.message
+        });
+    }
+});
+
+// Error handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).render('user/error', {
-        title: 'Error',
-        message: 'Something went wrong on our end.',
-        user: req.session.user
+    res.status(500).render('errors/500', {
+        title: 'Server Error',
+        message: 'Something went wrong!',
+        user: req.user
     });
 });
 
-// 404 Handler (after all other routes)
+// 404 handler
 app.use((req, res) => {
-    res.status(404).render('error', {
-        title: 'Not Found',
+    res.status(404).render('errors/404', {
+        title: 'Page Not Found',
         message: 'The page you requested could not be found.',
-        user: req.session.user
+        user: req.user
     });
 });
 
-  app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-  });
-});
+// Start server
+async function startServer() {
+    await initializeDatabase();
+
+    app.listen(port, () => {
+        console.log(`🚀 Server running on port ${port}`);
+    });
+}
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  knex.destroy().then(() => {
-    console.log('Database connection closed');
-    process.exit(0);
-  });
+    console.log('Shutting down...');
+    knex.destroy().then(() => {
+        console.log('Database connection closed');
+        process.exit(0);
+    });
 });
+
+startServer();

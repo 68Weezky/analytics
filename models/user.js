@@ -38,7 +38,7 @@ module.exports = class User {
      * @param {Object} [trx] - Optional transaction object
      * @returns {Promise<Object>} Result object
      */
-    static async store(name, email, rank, password, trx = knex) {
+    static async store(name, email, rank='user', password, trx = knex) {
         try {
             // Check if user already exists
             const existingUser = await trx(this.tableName)
@@ -102,28 +102,35 @@ module.exports = class User {
      * @returns {Promise<Object>} Result object
      */
     static async verifyCredentials(email, password) {
-        try {
-            const user = await this.query({ email });
-            
-            if (!user) {
-                return { success: false, message: "User not found" };
-            }
-
-            const passwordMatch = await bcrypt.compare(password, user.password);
-            
-            if (!passwordMatch) {
-                return { success: false, message: "Unauthorized" };
-            }
-
-            // Return user data without password
-            const { password: _, ...userData } = user;
-            return { success: true, user: userData };
-        } catch (error) {
-            console.error("Verification Error:", error);
-            return { success: false, error: error.message };
+    try {
+        console.log('Looking for user:', email); // Debug log
+        const user = await knex(this.tableName)
+            .where({ email })
+            .first();
+        
+        if (!user) {
+            console.log('User not found'); // Debug log
+            return { success: false, message: "User not found" };
         }
-    }
 
+        console.log('Comparing passwords...'); // Debug log
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        
+        if (!passwordMatch) {
+            console.log('Password mismatch'); // Debug log
+            return { success: false, message: "Unauthorized" };
+        }
+
+        // Debug log
+        console.log('Credentials verified successfully');
+        
+        const { password: _, ...userData } = user;
+        return { success: true, user: userData };
+    } catch (error) {
+        console.error("Verification Error:", error);
+        return { success: false, error: error.message };
+    }
+}
     /**
      * Update user data
      * @param {Number} id - User ID
