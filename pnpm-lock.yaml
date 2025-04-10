@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      lucide-svelte:
+        specifier: ^0.487.0
+        version: 0.487.0(svelte@5.25.10)
     devDependencies:
       '@sveltejs/adapter-node':
         specifier: ^5.2.11
@@ -857,6 +861,11 @@ packages:
 
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
+
+  lucide-svelte@0.487.0:
+    resolution: {integrity: sha512-ags7npK5Nv6AI9LBpAbijpmHxcO9hOeP0/7yJ72++AOBWmwB0X7LqNQFJk1PBe4wM0UsgklWQdyRZyx8s9xyXg==}
+    peerDependencies:
+      svelte: ^3 || ^4 || ^5.0.0-next.42
 
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
@@ -2032,6 +2041,10 @@ snapshots:
   locate-character@3.0.0: {}
 
   lru-cache@10.4.3: {}
+
+  lucide-svelte@0.487.0(svelte@5.25.10):
+    dependencies:
+      svelte: 5.25.10
 
   magic-string@0.30.17:
     dependencies:
