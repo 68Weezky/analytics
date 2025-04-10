@@ -3,7 +3,7 @@
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Form from "$lib/components/ui/form";
   import { Input } from "$lib/components/ui/input/index.js";
-  import { loginSchema} from "@/schema";
+  import { signupSchema} from "@/schema";
   import {
     superForm,
   } from "sveltekit-superforms";
@@ -13,7 +13,7 @@
   import { zodClient } from "sveltekit-superforms/adapters";
  
   const form = superForm(data.form, {
-    validators: zodClient(loginSchema),
+    validators: zodClient(signupSchema),
   });
  
   const { form: formData, enhance } = form;
@@ -22,8 +22,8 @@
 <div class="grid h-screen place-items-center">
   <Card.Root class="w-[350px]">
     <Card.Header>
-      <Card.Title>Login</Card.Title>
-      <Card.Description>Login to your analytics account.</Card.Description>
+      <Card.Title>Signup</Card.Title>
+      <Card.Description>Create an analytics account.</Card.Description>
     </Card.Header>
     <Card.Content>
       <form method="POST" use:enhance>
@@ -40,16 +40,24 @@
           <Form.Field {form} name="password">
             <Form.Control>
                {#snippet children({ props })}
-                  <Form.Label>Username</Form.Label>
+                  <Form.Label>Password</Form.Label>
                   <Input {...props} bind:value={$formData.password} placeholder="password" type="password"/>
+               {/snippet}
+            </Form.Control>
+            <Form.FieldErrors />
+          </Form.Field>
+          <Form.Field {form} name="confirmPassword">
+            <Form.Control>
+               {#snippet children({ props })}
+                  <Input {...props} bind:value={$formData.confirm_password} placeholder="Confirm Password" type="password"/>
                {/snippet}
             </Form.Control>
             <Form.FieldErrors />
           </Form.Field>
         </div>
         <div class="flex justify-between flex-col gap-2">
-          <Form.Button>Login</Form.Button>
-          <Button variant="outline" href="signup" >Signup</Button>
+          <Form.Button>Signup</Form.Button>
+          <Button variant="outline" href="/login" >Login</Button>
         </div>
       </form>
     </Card.Content>
