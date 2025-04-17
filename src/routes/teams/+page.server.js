@@ -1,5 +1,4 @@
-<script>
-    import * as Card from "$lib/components/ui/card/index.js";
+export let load = async () => {  
     let standings = [
         {
             position: 1,
@@ -22,17 +21,6 @@
         { date: "2025-04-17", time: "18:00", teamA: "Team E", teamB: "Team F", venue: "Stadium 3" },
         { date: "2025-04-18", time: "20:00", teamA: "Team G", teamB: "Team H", venue: "Stadium 4" },
     ];
-</script>
 
-<svelte:head>
-    <title>Hockey K.E - Upcoming Events</title>
-    <meta name="description" content="Current league standings for Hockey K.E" />
-</svelte:head>
-
-<main class="container mx-auto px-4 md:px-8 my-8">
-    <Card.Root>
-        <Card.Content>
-                          
-        </Card.Content>
-    </Card.Root>
-</main>
+    return {standings, matches}
+}
