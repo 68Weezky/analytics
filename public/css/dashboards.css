@@ -1,0 +1,1158 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+body {
+    margin: 0;
+    padding-inline-start: 0;
+    height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5;
+    /* A softer background */
+    color: #333;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+}
+
+.top-nav {
+    background-color: #1e293b;
+    /* Darker shade for top nav */
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow */
+    z-index: 2001;
+    /* Ensure it's above the sidebar */
+    position: fixed;
+    /* Fixed positioning */
+    width: 98%;
+}
+
+.content {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    /* Make content a positioning context */
+}
+
+.left {
+    width: 250px;
+    /* Fixed width for the left tab */
+    position: fixed;
+    /* Fixed positioning */
+    top: 60px;
+    /* Push it down below the top nav */
+    left: 0;
+    z-index: 1000;
+    background-color: #1e293b;
+    height: calc(100vh - 70px);
+    /* Adjust height to not overlap top nav */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    color: #fff;
+    padding: 2em;
+    overflow-y: auto;
+    /* Enable scrolling if content overflows */
+    transform: translateX(-100%);
+    /* Hide initially */
+    transition: transform 0.3s ease;
+    /* Smooth transition */
+}
+
+.left.show {
+    transform: translateX(0);
+    /* Show when active */
+}
+
+.right {
+    width: 100%;
+    min-height: 100vh;
+    padding: 2em;
+    margin-left: 0;
+    /* Adjust margin to accommodate left tab */
+    transition: margin-left 0.3s ease;
+    /* Smooth transition */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.right.show {
+    margin-left: 250px;
+    /* Adjust margin when left tab is visible */
+}
+
+.menu {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-image: url('/images/menu.png');
+    background-position: center;
+    background-size: cover;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.menu:hover {
+    opacity: 1;
+}
+
+.profile {
+    background-image: url('/images/boy.png');
+    background-position: center;
+    background-size: cover;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.profile:hover {
+    opacity: 1;
+}
+
+.divider {
+    width: 100%;
+    background-color: #4b5563;
+    /* A softer divider color */
+    height: 1px;
+    margin: 1em 0;
+}
+
+.tab-btn {
+    margin-top: 15px;
+    width: 70%;
+    padding: 0.75em 1em;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    color: #ddd;
+    border: none;
+    background: none;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+}
+
+.tab-btn span.material-symbols-outlined {
+    margin-right: 0.5em;
+}
+
+.tab-btn:hover {
+    background-color: #374151;
+    /* Slightly lighter shade on hover */
+    color: #fff;
+}
+
+.tab-btn.active {
+    background-color: #4b5563;
+    color: #fff;
+}
+
+.tab {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 1em;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.tab.active {
+    display: flex;
+}
+
+.profile-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    background-color: #fff;
+    padding: 1.5em;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.event-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1em;
+    margin-bottom: 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.event-card h3 {
+    color: #1e293b;
+    margin-bottom: 0.5em;
+}
+
+.event-card p {
+    color: #555;
+    margin-bottom: 0.25em;
+}
+
+.add-event-btn {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 1em;
+}
+
+.add-event-btn:hover {
+    background-color: #374151;
+}
+
+.event-dialog {
+    width: 80%;
+    max-width: 600px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2em;
+}
+
+.event-dialog label {
+    display: block;
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+.event-dialog input,
+.event-dialog textarea {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.event-dialog button {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.event-dialog button:hover {
+    background-color: #374151;
+}
+
+.delete-event-btn {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 0.5em 0.75em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.delete-event-btn:hover {
+    background-color: #c82333;
+}
+
+/* Existing styles for events */
+.match-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1em;
+    margin-bottom: 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.match-card h3 {
+    color: #1e293b;
+    margin-bottom: 0.5em;
+}
+
+.match-card p {
+    color: #555;
+    margin-bottom: 0.25em;
+}
+
+.match-actions {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.add-match-btn {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 1em;
+}
+
+.add-match-btn:hover {
+    background-color: #374151;
+}
+
+.match-dialog {
+    width: 80%;
+    max-width: 600px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2em;
+}
+
+.match-dialog label {
+    display: block;
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+.match-dialog input {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.match-dialog button {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.match-dialog button:hover {
+    background-color: #374151;
+}
+
+.delete-match {
+    background-color: #dc3545;
+    color: #fff;
+    outline: none;
+    padding: .5em;
+    border: none;
+    border-radius: 5px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.delete-match:hover {
+    background-color: #c82333;
+}
+
+.update-match {
+    background-color: #1e293b;
+    color: #fff;
+    outline: none;
+    padding: .5em;
+    border: none;
+    border-radius: 5px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.update-match:hover {
+    background-color: #1e293b;
+}
+
+.update-result-dialog {
+    width: 80%;
+    max-width: 600px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2em;
+}
+
+.update-result-dialog label {
+    display: block;
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+.update-result-dialog input {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.update-result-dialog button {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.update-result-dialog button:hover {
+    background-color: #1e293b;
+}
+
+/* Existing styles for events */
+.team-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1em;
+    margin-bottom: 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.team-card h3 {
+    color: #1e293b;
+    margin-bottom: 0.5em;
+}
+
+.team-card p {
+    color: #555;
+    margin-bottom: 0.25em;
+}
+
+.add-team-btn {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 1em;
+}
+
+.add-team-btn:hover {
+    background-color: #374151;
+}
+
+.team-dialog {
+    width: 80%;
+    max-width: 600px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2em;
+}
+
+.team-dialog label {
+    display: block;
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+.team-dialog input {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.team-dialog button {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.team-dialog button:hover {
+    background-color: #374151;
+}
+
+.delete-team {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 0.5em 0.75em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-team:hover {
+    background-color: #c82333;
+}
+
+/* Existing styles for events */
+.player-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1em;
+    margin-bottom: 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.player-card h3 {
+    color: #1e293b;
+    margin-bottom: 0.5em;
+}
+
+.player-card p {
+    color: #555;
+    margin-bottom: 0.25em;
+}
+
+.add-player-btn {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 1em;
+}
+
+.add-player-btn:hover {
+    background-color: #374151;
+}
+
+.player-dialog {
+    width: 80%;
+    max-width: 600px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2em;
+}
+
+.player-dialog label {
+    display: block;
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+.player-dialog input {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.player-dialog button {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.player-dialog button:hover {
+    background-color: #374151;
+}
+
+.delete-player {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 0.5em 0.75em;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-player:hover {
+    background-color: #c82333;
+}
+
+.update-player {
+    background-color: #1e293b;
+    color: #fff;
+    border: none;
+    padding: 0.5em 0.75em;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.update-player:hover {
+    background-color: #1e293b;
+}
+
+.update-player-dialog {
+    width: 80%;
+    max-width: 600px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2em;
+}
+
+.update-player-dialog label {
+    display: block;
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+.update-player-dialog input {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.update-player-dialog button {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.update-player-dialog button:hover {
+    background-color: #1e293b;
+}
+
+/* Existing styles for events */
+.season-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1em;
+    margin-bottom: 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.season-card h3 {
+    color: #1e293b;
+    margin-bottom: 0.5em;
+}
+
+.season-card p {
+    color: #555;
+    margin-bottom: 0.25em;
+}
+
+.add-season-btn {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 1em;
+}
+
+.add-season-btn:hover {
+    background-color: #374151;
+}
+
+.season-dialog {
+    width: 80%;
+    max-width: 600px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2em;
+}
+
+.season-dialog label {
+    display: block;
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+.season-dialog input,
+.season-dialog select {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+select {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.season-dialog button {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.season-dialog button:hover {
+    background-color: #374151;
+}
+
+.delete-season-btn {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 0.5em 0.75em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-season-btn:hover {
+    background-color: #c82333;
+}
+
+.update-season-btn {
+    background-color: #1e293b;
+    color: #fff;
+    border: none;
+    padding: 0.5em 0.75em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.update-season-btn:hover {
+    background-color: #1e293b;
+}
+
+.update-season-dialog {
+    width: 80%;
+    max-width: 600px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2em;
+}
+
+.update-season-dialog label {
+    display: block;
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+.update-season-dialog select {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.update-season-dialog button {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.update-season-dialog button:hover {
+    background-color: #1e293b;
+}
+
+/* Existing styles for events */
+.league-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1em;
+    margin-bottom: 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.league-card h3 {
+    color: #1e293b;
+    margin-bottom: 0.5em;
+}
+
+.league-card p {
+    color: #555;
+    margin-bottom: 0.25em;
+}
+
+.add-league-btn {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 1em;
+}
+
+.add-league-btn:hover {
+    background-color: #374151;
+}
+
+.league-dialog {
+    width: 80%;
+    max-width: 600px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2em;
+}
+
+.league-dialog label {
+    display: block;
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+.league-dialog input {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.league-dialog select {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.league-dialog button {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.league-dialog button:hover {
+    background-color: #374151;
+}
+
+.delete-league-btn {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 0.5em 0.75em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-league-btn:hover {
+    background-color: #c82333;
+}
+
+.update-league-btn {
+    background-color: #1e293b;
+    color: #fff;
+    border: none;
+    padding: 0.5em 0.75em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.update-league-btn:hover {
+    background-color: #1e293b;
+}
+
+.update-league-dialog {
+    width: 80%;
+    max-width: 600px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2em;
+}
+
+.update-league-dialog label {
+    display: block;
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+.update-league-dialog select {
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.update-league-dialog button {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.update-league-dialog button:hover {
+    background-color: #1e293b;
+}
+
+/* Style for the table */
+.player-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.player-stats-table th,
+.player-stats-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.player-stats-table th {
+    background-color: #f2f2f2;
+}
+
+/* Style for the table container */
+.player-stats-container {
+    overflow-x: auto;
+    /* Enable horizontal scrolling on smaller screens */
+}
+
+/* Style for the table */
+.player-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.player-stats-table th,
+.player-stats-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.player-stats-table th {
+    background-color: #f2f2f2;
+}
+
+/* Style for the table container */
+.player-stats-container {
+    overflow-x: auto;
+    /* Enable horizontal scrolling on smaller screens */
+}
+
+/* Style for the standings table */
+.standings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.standings-table th,
+.standings-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.standings-table th {
+    background-color: #f2f2f2;
+}
+
+/* Style for the standings table container */
+.standings-container {
+    overflow-x: auto;
+    /* Enable horizontal scrolling on smaller screens */
+}
+
+.update-user {
+    background-color: #1e293b;
+    color: #fff;
+    border: none;
+    padding: 0.5em 0.75em;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-user {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 0.5em 0.75em;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+a {
+    color: #f0f2f5;
+    text-decoration: none;
+}
+
+.update-user:hover {
+    background-color: #1e293b;
+}
+
+.delete-user:hover {
+    background-color: #c82333;
+}
+
+.player-card {
+    display: flex;
+    background-color: #e6e2e2;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.player-image {
+    flex-basis: 40%;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.player-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.player-info {
+    flex-basis: 60%;
+    padding: 20px;
+}
+
+.player-info h2 {
+    margin-top: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.player-info p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+/* Media Queries for Responsiveness */
+@media screen and (max-width: 768px) {
+    .left {
+        top: 70px;
+        width: 200px;
+        padding: 1em;
+        height: calc(100vh - 70px);
+    }
+
+    .right {
+        margin-left: 10px;
+        padding: 1em;
+    }
+
+    .right.show {
+        margin-left: 200px;
+    }
+
+    .tab-btn {
+        font-size: 0.9em;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .left {
+        width: 70%;
+        height: 100vh;
+        position: fixed;
+        top: 60px;
+        /* Height of the top-nav */
+        transform: translateX(-100%);
+        display: block;
+        z-index: 1002;
+        /* Higher than top-nav */
+        padding-top: 1em;
+    }
+
+    .left.show {
+        transform: translateX(0);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .right {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        /* Changed from 70% to 100% */
+        margin-left: 0;
+        /* Changed from 10 to 0 */
+        padding: 1em;
+        margin-right: 50px;
+        align-items: center;
+        /* Ensure content is centered */
+    }
+
+    .right.show {
+        margin-left: 0;
+    }
+
+    .top-nav {
+        padding: 0 1em;
+        width: 93%;
+    }
+
+    .menu {
+        height: 30px;
+        width: 30px;
+    }
+
+    .profile {
+        height: 30px;
+        width: 30px;
+    }
+}

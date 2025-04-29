@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hockey KE | League Manager</title>
+  <link rel="stylesheet" href="/css/dashboards.css">
+</head>
+
+<body>
+  <div class="main-section">
+    <div class="top-nav">
+      <div class="menu" id="menu">
+
+      </div>
+      <div class="profile" title="Logout">
+
+      </div>
+    </div>
+    <div class="content">
+      <div class="left" id="sub-menu">
+        <h1>Menu</h1>
+        <div class="divider"></div>
+        <div class="tab-btn">
+          Home
+        </div>
+        <div class="tab-btn">
+          Events
+        </div>
+        <div class="tab-btn">
+          Matches
+        </div>
+        <div class="tab-btn">
+          Teams
+        </div>
+        <div class="tab-btn">
+          Standings
+        </div>
+        <div class="tab-btn">
+          Player stats
+        </div>
+        <div class="tab-btn">
+          Manage Players
+        </div>
+        <div class="tab-btn">
+          Manage Leagues
+        </div>
+        <div class="tab-btn">
+          Manage Seasons
+        </div>
+        <div class="tab-btn">
+          <a href="/logout">Logout</a>
+        </div>
+      </div>
+      <div class="right">
+        <div class="tabs">
+          <div class="tab" id="home">
+            <div class="profile-card">
+              <h1>Profile Information</h1>
+              <p>Name: <%= user.name %>
+              </p>
+              <p>Email: <%= user.email %>
+              </p>
+              <p>Role: <%= user.role %>
+              </p>
+            </div>
+          </div>
+          <div class="tab {% if not tab or tab == 'events' then %} active {%end%}" id="events">
+            <h1>Events</h1>
+            <% if (events && events.length> 0) { %>
+              <% events.forEach(event=> { %>
+                <div class="event-card">
+                  <h3>
+                    <%= event.name %>
+                  </h3>
+                  <p>Start Date: <%= event.start_date %>
+                  </p>
+                  <p>End Date: <%= event.end_date %>
+                  </p>
+                  <p>Location: <%= event.location %>
+                  </p>
+                  <p>Description: <%= event.description %>
+                  </p>
+                  <button class="delete-event-btn" data-event-id="<%= event.id %>">Delete this event</button>
+                </div>
+                <% }); %>
+                  <% } else { %>
+                    <p>No events available.</p>
+                    <% } %>
+                      <button class="add-event-btn" onclick="document.getElementById('eventDialog').showModal();">+ Add
+                        Event</button>
+
+                      <dialog class="event-dialog" id="eventDialog">
+                        <h2>Add New Event</h2>
+                        <div id="addEventForm">
+                          <label for="name">Event Name:</label>
+                          <input type="text" id="name" name="name" required>
+
+                          <label for="startDate">Start Date:</label>
+                          <input type="date" id="startDate" name="startDate" required>
+
+                          <label for="endDate">End Date:</label>
+                          <input type="date" id="endDate" name="endDate" required>
+
+                          <label for="location">Location:</label>
+                          <input type="text" id="location" name="location" required>
+
+                          <label for="description">Description:</label>
+                          <textarea id="description" name="description" rows="4" required></textarea>
+
+                          <button type="submit" id="submit-event">Create Event</button>
+                          <button type="button"
+                            onclick="document.getElementById('eventDialog').close();">Cancel</button>
+                        </div>
+                      </dialog>
+          </div>
+          <div class="tab" id="matches">
+            <h1>Matches</h1>
+            <% if (matches && matches.length> 0) { %>
+              <% matches.forEach(match=> { %>
+                <div class="match-card">
+                  <h3>
+                    <%= match.date %>
+                  </h3>
+                  <p>Venue: <%= match.venue %>
+                  </p>
+                  <p>Home Team: <%= match.home_team %>
+                  </p>
+                  <p>Away Team: <%= match.away_team %>
+                  </p>
+                  <button class="delete-match" data-match-id="<%= match.id %>">Delete</button>
+                  <button class="update-match" data-match-id="<%= match.id %>">Update Results</button>
+                </div>
+                <% }); %>
+                  <% } else { %>
+                    <p>No matches available.</p>
+                    <% } %>
+                      <button class="add-match-btn" onclick="document.getElementById('matchDialog').showModal();">+Add
+                        Match</button>
+
+                      <dialog class="match-dialog" id="matchDialog">
+                        <h2>Add New Match</h2>
+                        <div id="addMatchForm">
+                          <label for="date">Date:</label>
+                          <input type="date" id="match-date" name="date" required>
+
+                          <label for="venue">Venue:</label>
+                          <input type="text" id="venue" name="venue" required>
+
+                          <label for="homeTeam">Home Team:</label>
+                          <input type="text" id="homeTeam" name="homeTeam" required>
+
+                          <label for="awayTeam">Away Team:</label>
+                          <input type="text" id="awayTeam" name="awayTeam" required>
+
+                          <button type="submit" id="submit-match-btn">Create Match</button>
+                          <button type="button"
+                            onclick="document.getElementById('matchDialog').close();">Cancel</button>
+                        </div>
+                      </dialog>
+                      <dialog class="update-result-dialog" id="updateResultDialog">
+                        <h2>Update Match Result</h2>
+                        <div id="updateResultForm">
+                          <input type="hidden" id="matchId" name="matchId">
+
+                          <label for="awayShots">Away Shots:</label>
+                          <input type="number" id="awayShots" name="awayShots" required>
+
+                          <label for="homeShots">Home Shots:</label>
+                          <input type="number" id="homeShots" name="homeShots" required>
+
+                          <label for="homeFouls">Home Fouls:</label>
+                          <input type="number" id="homeFouls" name="homeFouls" required>
+
+                          <label for="awayFouls">Away Fouls:</label>
+                          <input type="number" id="awayFouls" name="awayFouls" required>
+
+                          <label for="homeGoals">Home Goals:</label>
+                          <input type="number" id="homeGoals" name="homeGoals" required>
+
+                          <label for="awayGoals">Away Goals:</label>
+                          <input type="number" id="awayGoals" name="awayGoals" required>
+
+                          <label for="homePasses">Home Passes:</label>
+                          <input type="number" id="homePasses" name="homePasses" required>
+
+                          <label for="awayPasses">Away Passes:</label>
+                          <input type="number" id="awayPasses" name="awayPasses" required>
+
+                          <label for="finalScore">Final Score:</label>
+                          <input type="text" id="finalScore" name="finalScore" required>
+
+                          <label for="matchLeague">League Played:</label>
+                          <input type="text" id="matchLeague" name="matchLeague" required>
+
+                          <button type="submit" id="update-match-results">Update Result</button>
+                          <button type="button"
+                            onclick="document.getElementById('updateResultDialog').close();">Cancel</button>
+                        </div>
+                      </dialog>
+          </div>
+          <div class="tab" id="standings">
+            <h1>League Standings</h1>
+            <div class="standings-container">
+              <div class="standings-container">
+                <% Object.keys(standings).forEach(league => { %>
+                  <h2><%= league %></h2>
+                  <table class="standings-table">
+                    <thead>
+                      <tr>
+                        <th>Position</th>
+                        <th>Team</th>
+                        <th>Wins</th>
+                        <th>Losses</th>
+                        <th>Draws</th>
+                        <th>Goals For</th>
+                        <th>Goals Against</th>
+                        <th>Goal Difference</th>
+                        <th>Points</th>
+                        <th>Games Played</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% if (standings[league] && standings[league].length > 0) { %>
+                        <% standings[league].forEach((team, index) => { %>
+                          <tr>
+                            <td><%= index + 1 %></td>
+                            <td><%= team.name %></td>
+                            <td><%= team.wins %></td>
+                            <td><%= team.losses %></td>
+                            <td><%= team.draws %></td>
+                            <td><%= team.goals_for %></td>
+                            <td><%= team.goals_against %></td>
+                            <td><%= team.goal_difference %></td>
+                            <td><%= team.points %></td>
+                            <td><%= team.games_played %></td>
+                          </tr>
+                        <% }); %>
+                      <% } else { %>
+                        <tr>
+                          <td colspan="10">No standings available for <%= league %>.</td>
+                        </tr>
+                      <% } %>
+                    </tbody>
+                  </table>
+                <% }); %>
+                <% if (Object.keys(standings).length === 0) { %>
+                  <p>No stats to show</p>
+                <% } %>
+              </div>
+            </div>                      
+          </div>
+          <div class="tab" id="teams">
+            <h1>Teams</h1>
+            <% if (teams && teams.length> 0) { %>
+              <% teams.forEach(team=> { %>
+                <div class="team-card">
+                  <h3>
+                    <%= team.name %>
+                  </h3>
+                  <p>Number of Players: <%= team.number_of_players %>
+                  </p>
+                  <p>League: <%= team.league %>
+                  </p>
+                  <p>Season: <%= team.season %>
+                  </p>
+                  <button class="delete-team" data-team-id="<%= team.id %>">Delete</button>
+                </div>
+                <% }); %>
+                  <% } else { %>
+                    <p>No teams available.</p>
+                    <% } %>
+                      <button class="add-team-btn" onclick="document.getElementById('teamDialog').showModal();">+Add
+                        Team</button>
+
+                      <dialog class="team-dialog" id="teamDialog">
+                        <h2>Add New Team</h2>
+                        <div id="addTeamForm">
+                          <label for="name">Team Name:</label>
+                          <input type="text" id="team-name" name="name" required>
+
+                          <label for="number_of_players">Number of Players:</label>
+                          <input type="number" id="number_of_players" name="number_of_players" required>
+
+                          <label for="league">League:</label>
+                          <input type="text" id="league" name="league" required>
+
+                          <label for="season">Season:</label>
+                          <input type="text" id="season" name="season" required>
+
+                          <label for="manager">Team Manager:</label>
+                          <input type="text" id="manager" name="manager" required>
+
+                          <button type="submit" id="submit-team">Create Team</button>
+                          <button type="button" onclick="document.getElementById('teamDialog').close();">Cancel</button>
+                        </div>
+                      </dialog>
+          </div>
+          <div class="tab" id="player-stats">
+            <h1>Player Stats</h1>
+            <div class="player-stats-container">
+              <div class="player-cards-container">
+                <% if (players && players.length > 0) { %>
+                  <% players.forEach(player => { %>
+                    <div class="player-card">
+                      <div class="player-image">
+                        <img src="/images/boy.png" alt="<%= player.name %>">
+                      </div>
+                      <div class="player-info">
+                        <h2><%= player.name %></h2>
+                        <p>Team: <%= player.team %></p>
+                        <p>Position: <%= player.position %></p>
+                        <p>Age: <%= player.age %></p>
+                        <p>Jersey Number: <%= player.number %></p>
+                        <p>Goals: <%= player.goals %></p>
+                        <p>Red Cards: <%= player.red_cards %></p>
+                        <p>Yellow Cards: <%= player.yellow_cards %></p>
+                      </div>
+                    </div>
+                  <% }); %>
+                <% } else { %>
+                  <p>No players available.</p>
+                <% } %>
+              </div>
+              
+            </div>
+          </div>
+          <div class="tab" id="manage-players">
+            <h1>Manage Players</h1>
+            <% if (players && players.length> 0) { %>
+              <% players.forEach(player=> { %>
+                <div class="player-card">
+                  <h3>
+                    <%= player.name %>
+                  </h3>
+                  <p>Team: <%= player.team %>
+                  </p>
+                  <p>Goals: <%= player.goals %>
+                  </p>
+                  <p>Red Cards: <%= player.red_cards %>
+                  </p>
+                  <p>Yellow Cards: <%= player.yellow_cards %>
+                  </p>
+                  <button class="delete-player" data-player-id="<%= player.id %>">Delete</button>
+                  <button class="update-player" data-player-id="<%= player.id %>"
+                    onclick="openUpdatePlayerDialog('<%= player.id %>')">Update Stats</button>
+                </div>
+                <% }); %>
+                  <% } else { %>
+                    <p>No players available.</p>
+                    <% } %>
+                      <button class="add-player-btn" onclick="document.getElementById('playerDialog').showModal();">+Add
+                        Player</button>
+
+                      <dialog class="player-dialog" id="playerDialog">
+                        <h2>Add New Player</h2>
+                        <form id="addPlayerForm">
+                          <label for="name">Player Name:</label>
+                          <input type="text" id="player-name" name="name" required>
+
+                          <label for="team">Team:</label>
+                          <input type="text" id="player-team" name="team" required>
+
+                          <label for="position">Position:</label>
+                          <input type="text" id="position" name="position" required>
+
+                          <label for="team">Age:</label>
+                          <input type="number" id="player-age" name="age" required>
+
+                          <label for="jersey-number">Jersey Number:</label>
+                          <input type="text" id="jersey-number" name="jersey-number" required>
+
+                          <label for="player-manager">Team Manager:</label>
+                          <input type="text" id="player-manager" name="player-manager" required>
+
+                          <button type="submit" id="submit-player">Create Player</button>
+                          <button type="button"
+                            onclick="document.getElementById('playerDialog').close();">Cancel</button>
+                        </form>
+                      </dialog>
+
+                      <!-- Update Player Dialog -->
+                      <dialog class="update-player-dialog" id="updatePlayerDialog">
+                        <h2>Update Player Stats</h2>
+                        <form id="updatePlayerForm">
+                          <input type="hidden" id="playerId" name="playerId">
+
+                          <label for="goals">Goals:</label>
+                          <input type="number" id="goals" name="goals" required>
+
+                          <label for="red_cards">Red Cards:</label>
+                          <input type="number" id="red_cards" name="red_cards" required>
+
+                          <label for="yellow_cards">Yellow Cards:</label>
+                          <input type="number" id="yellow_cards" name="yellow_cards" required>
+
+                          <label for="new_manager">Team Manager:</label>
+                          <input type="text" id="new_manager" name="new_manager" required>
+
+                          <button type="submit" id="update-player-btn">Update Stats</button>
+                          <button type="button"
+                            onclick="document.getElementById('updatePlayerDialog').close();">Cancel</button>
+                        </form>
+                      </dialog>
+          </div>
+          <div class="tab" id="manage-leagues">
+            <h1>Manage Leagues</h1>
+            <% if (leagues && leagues.length> 0) { %>
+              <% leagues.forEach(league=> { %>
+                <div class="league-card">
+                  <h3>
+                    <%= league.name %>
+                  </h3>
+                  <p>Number of Teams: <%= league.number_of_teams %>
+                  </p>
+                  <p>Status: <%= league.status %>
+                  </p>
+                  <button class="delete-league-btn" data-league-id="<%= league.id %>">Delete</button>
+                  <button class="update-league-btn" data-league-id="<%= league.id %>"
+                    onclick="openUpdateLeagueDialog('<%= league.id %>')">Update Status</button>
+                </div>
+                <% }); %>
+                  <% } else { %>
+                    <p>No leagues available.</p>
+                    <% } %>
+                      <button class="add-league-btn" onclick="document.getElementById('leagueDialog').showModal();">+Add
+                        League</button>
+
+                      <dialog class="league-dialog" id="leagueDialog">
+                        <h2>Add New League</h2>
+                        <form id="addLeagueForm">
+                          <label for="name">League Name:</label>
+                          <input type="text" id="league_name" name="name" required>
+
+                          <label for="startDate">Start date:</label>
+                          <input type="date" id="league_start_date" name="startDate" required>
+
+                          <label for="endDate">End date:</label>
+                          <input type="date" id="league_end_date" name="endDate" required>
+
+                          <label for="number_of_teams">Number of Teams:</label>
+                          <input type="number" id="league_number_of_teams" name="number_of_teams" required>
+
+                          <label for="season">Season:</label>
+                          <input type="text" id="league_season" name="season" required>
+
+                          <label for="number_of_matches">Number of Matches:</label>
+                          <input type="number" id="league_number_of_matches" name="number_of_matches" required>
+
+                          <label for="status">Status:</label>
+                          <select id="league_status" name="status" required>
+                            <option value="ongoing">Ongoing</option>
+                            <option value="finished">Finished</option>
+                          </select>
+
+                          <button type="submit" id="submit-league">Create League</button>
+                          <button type="button"
+                            onclick="document.getElementById('leagueDialog').close();">Cancel</button>
+                        </form>
+                      </dialog>
+
+                      <!-- Update League Dialog -->
+                      <dialog class="update-league-dialog" id="updateLeagueDialog">
+                        <h2>Update League Status</h2>
+                        <form id="updateLeagueForm">
+                          <input type="hidden" id="leagueId" name="leagueId">
+
+                          <label for="status">Status:</label>
+                          <select id="new-league-status" name="status" required>
+                            <option value="ongoing">Ongoing</option>
+                            <option value="finished">Finished</option>
+                          </select>
+
+                          <button type="submit" id="update-league">Update Status</button>
+                          <button type="button"
+                            onclick="document.getElementById('updateLeagueDialog').close();">Cancel</button>
+                        </form>
+                      </dialog>
+          </div>
+          <div class="tab" id="manage-seasons">
+            <h1>Manage seasons</h1>
+            <% if (seasons && seasons.length> 0) { %>
+              <% seasons.forEach(season=> { %>
+                <div class="season-card">
+                  <h3>
+                    <%= season.name %>
+                  </h3>
+                  <p>Start Date: <%= season.start_date %>
+                  </p>
+                  <p>End Date: <%= season.end_date %>
+                  </p>
+                  <p>Number of Teams: <%= season.number_of_teams %>
+                  </p>
+                  <p>Status: <%= season.status %>
+                  </p>
+                  <button class="delete-season-btn" data-season-id="<%= season.id %>">Delete</button>
+                  <button class="update-season-btn" data-season-id="<%= season.id %>"
+                    onclick="openUpdateSeasonDialog('<%= season.id %>')">Update Status</button>
+                </div>
+                <% }); %>
+                  <% } else { %>
+                    <p>No seasons available.</p>
+                    <% } %>
+                      <button class="add-season-btn" onclick="document.getElementById('seasonDialog').showModal();">+Add
+                        Season</button>
+
+                      <dialog class="season-dialog" id="seasonDialog">
+                        <h2>Add New Season</h2>
+                        <form id="addSeasonForm">
+                          <label for="name">Season Name:</label>
+                          <input type="text" id="season-name" name="name" required>
+
+                          <label for="start_date">Start Date:</label>
+                          <input type="date" id="start_date" name="start_date" required>
+
+                          <label for="end_date">End Date:</label>
+                          <input type="date" id="end_date" name="end_date" required>
+
+                          <label for="number_of_teams">Number of Teams:</label>
+                          <input type="number" id="number_of_teams" name="number_of_teams" required>
+
+                          <label for="number_of_leagues">Number of Leagues:</label>
+                          <input type="number" id="number_of_leagues" name="number_of_leagues" required>
+
+                          <label for="status">Status:</label>
+                          <select id="status" name="status" required>
+                            <option value="ongoing">Ongoing</option>
+                            <option value="finished">Finished</option>
+                          </select>
+
+                          <button type="submit" id="submit-season">Create Season</button>
+                          <button type="button"
+                            onclick="document.getElementById('seasonDialog').close();">Cancel</button>
+                        </form>
+                      </dialog>
+
+                      <!-- Update Season Dialog -->
+                      <dialog class="update-season-dialog" id="updateSeasonDialog">
+                        <h2>Update Season Status</h2>
+                        <form id="updateSeasonForm">
+                          <input type="hidden" id="seasonId" name="seasonId">
+
+                          <label for="status">Status:</label>
+                          <select id="new-season-status" name="status" required>
+                            <option value="ongoing">Ongoing</option>
+                            <option value="finished">Finished</option>
+                          </select>
+
+                          <button type="submit" id="update-season">Update Status</button>
+                          <button type="button"
+                            onclick="document.getElementById('updateSeasonDialog').close();">Cancel</button>
+                        </form>
+                      </dialog>
+          </div>
+        </div>
+      </div>
+      <script src="/js/dashboards.js"></script>
+      <script src="/js/submitEvent.js"></script>
+</body>
+
+</html>

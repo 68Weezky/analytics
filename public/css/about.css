@@ -1,0 +1,66 @@
+body{
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.main{
+    padding: 2em;
+    width: 70%;
+}
+
+.main h1, h2, h3{
+    color: #0F172A;
+}
+
+.main p, li{
+    color: #59598a;
+}
+
+.team{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.team-cards{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.card{
+    /* width: 350px; */
+    border: #0F172A solid 1px;  
+    border-radius: 8px;
+    padding: 1em;
+    margin: 0.5em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card p{
+    text-align: center;
+}
+
+.icon{
+    background-image: url('/images/boy.png');
+    background-position: center;
+    background-size: cover;
+    height: 70px;
+    width: 70px;
+    border-radius: 50%;
+}
+
+.btn{
+    background-color: #0F172A;
+    border-radius: 5px;
+    color: #fff;
+    padding: .8em;
+    cursor: pointer;
+}

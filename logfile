@@ -1,0 +1,13 @@
+2025-04-28 20:33:27.746 EAT [1343] LOG:  starting PostgreSQL 17.0 on aarch64-unknown-linux-android, compiled by Android (12470979, +pgo, +bolt, +lto, +mlgo, based on r522817c) clang version 18.0.3 (https://android.googlesource.com/toolchain/llvm-project d8003a456d14a3deb8054cdaa529ffbf02d9b262), 64-bit
+2025-04-28 20:33:27.748 EAT [1343] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-04-28 20:33:27.750 EAT [1343] LOG:  listening on Unix socket "/data/data/com.termux/files/usr/tmp/.s.PGSQL.5432"
+2025-04-28 20:33:27.757 EAT [1357] LOG:  database system was shut down at 2025-04-28 20:32:17 EAT
+2025-04-28 20:33:27.769 EAT [1343] LOG:  database system is ready to accept connections
+2025-04-28 20:34:57.869 EAT [2349] ERROR:  could not open shared memory segment "pg_dynshmem/mmap.2024413728": No such file or directory
+2025-04-28 20:35:27.837 EAT [1343] LOG:  could not open file "postmaster.pid": No such file or directory
+2025-04-28 20:35:27.838 EAT [1343] LOG:  performing immediate shutdown because data directory lock file is invalid
+2025-04-28 20:35:27.838 EAT [1343] LOG:  received immediate shutdown request
+2025-04-28 20:35:27.838 EAT [1343] LOG:  could not open file "postmaster.pid": No such file or directory
+2025-04-28 20:35:27.845 EAT [1343] LOG:  could not remove shared memory segment "pg_dynshmem/mmap.2024413728": No such file or directory
+2025-04-28 20:35:27.845 EAT [1343] LOG:  could not remove shared memory segment "pg_dynshmem/mmap.515258384": No such file or directory
+2025-04-28 20:35:27.853 EAT [1343] LOG:  database system is shut down
