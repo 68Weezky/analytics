@@ -101,6 +101,51 @@ body {
     opacity: 1;
 }
 
+.horizontal-menu {
+    margin-top: 20px;
+    text-align: center;
+}
+.horizontal-menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+.horizontal-menu ul li {
+    display: inline;
+}
+.horizontal-menu ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+.horizontal-menu ul li a:hover {
+    background-color: #007BFF;
+    color: white;
+}
+.league-chart-container {
+    margin-bottom: 40px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+  }
+  
+  .league-chart-container h3 {
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .league-filter {
+    margin-left: 20px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+  }
 .profile {
     background-image: url('/images/boy.png');
     background-position: center;
@@ -1104,6 +1149,25 @@ a {
         font-size: 0.9em;
     }
 }
+
+.search {
+    margin-top: 20px;
+    text-align: center;
+}
+.search input[type="text"] {
+    width: 300px;
+    padding: 10px;
+    border: 2px solid #6e8ed9;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.search input[type="text"]:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
 
 @media screen and (max-width: 480px) {
     .left {

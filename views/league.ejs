@@ -36,9 +36,12 @@
         </div>
         <div class="tab-btn">
           Standings
-        </div>
+        </div> 
         <div class="tab-btn">
           Player stats
+        </div>
+        <div class="tab-btn">
+          Stats
         </div>
         <div class="tab-btn">
           Manage Players
@@ -154,6 +157,9 @@
                           <label for="awayTeam">Away Team:</label>
                           <input type="text" id="awayTeam" name="awayTeam" required>
 
+                          <label for="matchLeague">League Played:</label>
+                          <input type="text" id="matchLeague" name="matchLeague" required>
+
                           <button type="submit" id="submit-match-btn">Create Match</button>
                           <button type="button"
                             onclick="document.getElementById('matchDialog').close();">Cancel</button>
@@ -190,9 +196,6 @@
 
                           <label for="finalScore">Final Score:</label>
                           <input type="text" id="finalScore" name="finalScore" required>
-
-                          <label for="matchLeague">League Played:</label>
-                          <input type="text" id="matchLeague" name="matchLeague" required>
 
                           <button type="submit" id="update-match-results">Update Result</button>
                           <button type="button"
@@ -326,6 +329,58 @@
               
             </div>
           </div>
+          <div class="tab" id="stats">
+            <h1>Statistics with D3js</h1>
+            <div class="stats-container">
+              <div class="right">
+                <div id="graph" class="tab-content">
+                  <div class="horizontal-menu">
+                    <ul>
+                      <li><a href="#teams" class="active" onclick="showTeamsView()">Teams</a></li>
+                      <li><a href="#players" onclick="showPlayersView()">Players</a></li>
+                    </ul>
+                    <select id="league-filter" class="league-filter">
+                      <option value="all">All Leagues</option>
+                      <% Object.keys(standings).forEach(leagueId => { %>
+                        <option value="<%= leagueId %>">League <%= leagueId %></option>
+                      <% }); %>
+                    </select>
+                  </div>
+                  
+                  <!-- Teams View Container -->
+                  <div id="teams-view" class="data-view">
+                    <div class="search">
+                      <input type="text" id="team-search" placeholder="Search teams..." oninput="filterTeams()">
+                    </div>
+                    <div id="standings-chart"></div>
+                  </div>
+                  
+                  <!-- Players View Container -->
+                  <div id="players-view" class="data-view" style="display:none">
+                    <div class="search">
+                      <input type="text" id="player-search" placeholder="Search players..." oninput="filterPlayers()">
+                    </div>
+                    <div id="players-chart"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <script src="https://d3js.org/d3.v7.min.js"></script>
+          <script>
+            // Pass data from EJS to JS
+            window.appData = {
+              standings: <%- JSON.stringify(typeof standings !== 'undefined' ? standings : {}) %>,
+              players: <%- JSON.stringify(typeof players !== 'undefined' ? players : []) %>,
+              leagues: <%- JSON.stringify(
+                typeof leagues !== 'undefined' 
+                  ? leagues 
+                  : (typeof standings !== 'undefined' ? Object.keys(standings).map(id => ({ id, name: `League ${id}` })) : [])
+              ) %>
+            };
+          </script>
+          <script src="/js/stats.js"></script>
           <div class="tab" id="manage-players">
             <h1>Manage Players</h1>
             <% if (players && players.length> 0) { %>

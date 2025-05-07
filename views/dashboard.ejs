@@ -38,6 +38,9 @@
           <div class="tab-btn" onclick="openTab(event, 'player-stats')">
             Player stats
           </div>
+          <div class="tab-btn" onclick="openTab(event, 'stats')">
+            stats
+          </div>
           <div class="tab-btn">
             <a href="/logout">Logout</a>
           </div>
@@ -105,6 +108,7 @@
                           <tr>
                             <th>Position</th>
                             <th>Team</th>
+                            <th>Games Played</th>
                             <th>Wins</th>
                             <th>Losses</th>
                             <th>Draws</th>
@@ -112,7 +116,7 @@
                             <th>Goals Against</th>
                             <th>Goal Difference</th>
                             <th>Points</th>
-                            <th>Games Played</th>
+                            
                           </tr>
                         </thead>
                         <tbody>
@@ -121,6 +125,7 @@
                               <tr>
                                 <td><%= index + 1 %></td>
                                 <td><%= team.name %></td>
+                                <td><%= team.games_played %></td>
                                 <td><%= team.wins %></td>
                                 <td><%= team.losses %></td>
                                 <td><%= team.draws %></td>
@@ -128,7 +133,7 @@
                                 <td><%= team.goals_against %></td>
                                 <td><%= team.goal_difference %></td>
                                 <td><%= team.points %></td>
-                                <td><%= team.games_played %></td>
+                                
                               </tr>
                             <% }); %>
                           <% } else { %>
@@ -165,6 +170,58 @@
                     <p>No teams available.</p>
                     <% } %>
             </div>
+            <div class="tab" id="stats">
+              <h1>Statistics with D3js</h1>
+              <div class="stats-container">
+                <div class="right">
+                  <div id="graph" class="tab-content">
+                    <div class="horizontal-menu">
+                      <ul>
+                        <li><a href="#teams" class="active" onclick="showTeamsView()">Teams</a></li>
+                        <li><a href="#players" onclick="showPlayersView()">Players</a></li>
+                      </ul>
+                      <select id="league-filter" class="league-filter">
+                        <option value="all">All Leagues</option>
+                        <% Object.keys(standings).forEach(leagueId => { %>
+                          <option value="<%= leagueId %>">League <%= leagueId %></option>
+                        <% }); %>
+                      </select>
+                    </div>
+                    
+                    <!-- Teams View Container -->
+                    <div id="teams-view" class="data-view">
+                      <div class="search">
+                        <input type="text" id="team-search" placeholder="Search teams..." oninput="filterTeams()">
+                      </div>
+                      <div id="standings-chart"></div>
+                    </div>
+                    
+                    <!-- Players View Container -->
+                    <div id="players-view" class="data-view" style="display:none">
+                      <div class="search">
+                        <input type="text" id="player-search" placeholder="Search players..." oninput="filterPlayers()">
+                      </div>
+                      <div id="players-chart"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <script src="https://d3js.org/d3.v7.min.js"></script>
+            <script>
+              // Pass data from EJS to JS
+              window.appData = {
+                standings: <%- JSON.stringify(typeof standings !== 'undefined' ? standings : {}) %>,
+                players: <%- JSON.stringify(typeof players !== 'undefined' ? players : []) %>,
+                leagues: <%- JSON.stringify(
+                  typeof leagues !== 'undefined' 
+                    ? leagues 
+                    : (typeof standings !== 'undefined' ? Object.keys(standings).map(id => ({ id, name: `League ${id}` })) : [])
+                ) %>
+              };
+            </script>
+            <script src="/js/stats.js"></script>
             <div class="tab" id="player-stats">
               <h1>Player Stats</h1>
               <div class="player-stats-container">
