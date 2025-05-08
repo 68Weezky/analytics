@@ -363,8 +363,8 @@ async function uploadMatches(userData) {
 
 app.post('/submit-match', async (req, res) => {
     try {
-        const { date, venue, homeTeam, awayTeam } = req.body;
-
+        const { date, venue, homeTeam, awayTeam,league } = req.body;
+        console.log(req.body)
         const id = req.session.user.id;
 
         // Construct userData object with post information and picture path
@@ -374,6 +374,7 @@ app.post('/submit-match', async (req, res) => {
             venue: venue,
             home_team: homeTeam,
             away_team: awayTeam,
+            league: league
         };
 
         console.log(userData);
@@ -415,8 +416,7 @@ app.post('/update-results', async (req, res) => {
             awayGoals,
             homePasses,
             awayPasses,
-            finalScore, 
-            matchLeague
+            finalScore
         } = req.body;
 
         const matchData = {
@@ -429,8 +429,8 @@ app.post('/update-results', async (req, res) => {
             away_goals: awayGoals,
             home_passes: homePasses,
             away_passes: awayPasses,
-            final_score: finalScore,
-            league: matchLeague
+            status: "completed",
+            final_score: finalScore
         };
 
         // console.log(matchData);

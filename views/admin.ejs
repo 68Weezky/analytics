@@ -35,9 +35,7 @@
           <div class="tab-btn" onclick="openTab(event, 'standings')">
             Standings
           </div>
-          <div class="tab-btn" onclick="openTab(event, 'player-stats')">
-            Player stats
-          </div>
+          
           <div class="tab-btn">
             Stats
           </div>
@@ -58,203 +56,150 @@
                 <p>Role: <%= user.role %></p>
               </div>
             </div>
-            <div class="tab {% if not tab or tab == 'events' then %} active {%end%}" id="events">
+            <div class="tab" id="events">
               <h1>Events</h1>
-            <% if (events && events.length> 0) { %>
-              <% events.forEach(event=> { %>
-                <div class="event-card">
-                  <h3>
-                    <%= event.name %>
-                  </h3>
-                  <p>Start Date: <%= event.start_date %>
-                  </p>
-                  <p>End Date: <%= event.end_date %>
-                  </p>
-                  <p>Location: <%= event.location %>
-                  </p>
-                  <p>Description: <%= event.description %>
-                  </p>
-                </div>
+              <% if (events && events.length> 0) { %>
+                <% events.forEach(event=> { %>
+                  <div class="event-card">
+                    <h3><%= event.name %></h3>
+                    <p>Start Date: <%= event.start_date %></p>
+                    <p>End Date: <%= event.end_date %></p>
+                    <p>Location: <%= event.location %></p>
+                    <p>Description: <%= event.description %></p>
+                    <button class="delete-event-btn" data-event-id="<%= event.id %>">Delete this event</button>
+                  </div>
                 <% }); %>
-                  <% } else { %>
-                    <p>No events available.</p>
-            <% } %>
+              <% } else { %>
+                <p>No events available.</p>
+              <% } %>
+              <button class="add-event-btn" onclick="document.getElementById('eventDialog').showModal();">+ Add Event</button>
             </div>
-            <div class="tab" id="matches"> 
+            <div class="tab" id="matches">
               <h1>Matches</h1>
               <% if (matches && matches.length> 0) { %>
                 <% matches.forEach(match=> { %>
                   <div class="match-card">
-                    <h3>
-                      <%= match.date %>
-                    </h3>
-                    <p>Venue: <%= match.venue %>
-                    </p>
-                    <p>Home Team: <%= match.home_team %>
-                    </p>
-                    <p>Away Team: <%= match.away_team %>
-                    </p>
+                    <h3><%= match.date %></h3>
+                    <p>Venue: <%= match.venue %></p>
+                    <p>Home Team: <%= match.home_team %></p>
+                    <p>Away Team: <%= match.away_team %></p>
+                    <button class="delete-match" data-match-id="<%= match.id %>">Delete</button>
+                    <button class="update-match" data-match-id="<%= match.id %>">Update Results</button>
                   </div>
-                  <% }); %>
-                    <% } else { %>
-                      <p>No matches available.</p>
-                <% } %>
+                <% }); %>
+              <% } else { %>
+                <p>No matches available.</p>
+              <% } %>
+              <button class="add-match-btn" onclick="document.getElementById('matchDialog').showModal();">+Add Match</button>
             </div>
             <div class="tab" id="standings">
               <h1>League Standings</h1>
               <div class="standings-container">
-                <div class="standings-container">
-                  <% Object.keys(standings).forEach(league => { %>
-                    <h2><%= league %></h2>
-                    <table class="standings-table">
-                      <thead>
-                        <tr>
-                          <th>Position</th>
-                          <th>Team</th>
-                          <th>Games Played</th>
-                          <th>Wins</th>
-                          <th>Losses</th>
-                          <th>Draws</th>
-                          <th>Goals For</th>
-                          <th>Goals Against</th>
-                          <th>Goal Difference</th>
-                          <th>Points</th>
-                          
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <% if (standings[league] && standings[league].length > 0) { %>
-                          <% standings[league].forEach((team, index) => { %>
-                            <tr>
-                              <td><%= index + 1 %></td>
-                              <td><%= team.name %></td>
-                              <td><%= team.games_played %></td>
-                              <td><%= team.wins %></td>
-                              <td><%= team.losses %></td>
-                              <td><%= team.draws %></td>
-                              <td><%= team.goals_for %></td>
-                              <td><%= team.goals_against %></td>
-                              <td><%= team.goal_difference %></td>
-                              <td><%= team.points %></td>
-                              
-                            </tr>
-                          <% }); %>
-                        <% } else { %>
+                <% Object.keys(standings).forEach(league => { %>
+                  <h2><%= league %></h2>
+                  <table class="standings-table">
+                    <thead>
+                      <tr>
+                        <th>Position</th>
+                        <th>Team</th>
+                        <th>Games Played</th>
+                        <th>Wins</th>
+                        <th>Losses</th>
+                        <th>Draws</th>
+                        <th>Goals For</th>
+                        <th>Goals Against</th>
+                        <th>Goal Difference</th>
+                        <th>Points</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% if (standings[league] && standings[league].length > 0) { %>
+                        <% standings[league].forEach((team, index) => { %>
                           <tr>
-                            <td colspan="10">No standings available for <%= league %>.</td>
+                            <td><%= index + 1 %></td>
+                            <td><%= team.name %></td>
+                            <td><%= team.games_played %></td>
+                            <td><%= team.wins %></td>
+                            <td><%= team.losses %></td>
+                            <td><%= team.draws %></td>
+                            <td><%= team.goals_for %></td>
+                            <td><%= team.goals_against %></td>
+                            <td><%= team.goal_difference %></td>
+                            <td><%= team.points %></td>
                           </tr>
-                        <% } %>
-                      </tbody>
-                    </table>
-                  <% }); %>
-                  <% if (Object.keys(standings).length === 0) { %>
-                    <p>No stats to show</p>
-                  <% } %>
-                </div>
-              </div>              
+                        <% }); %>
+                      <% } else { %>
+                        <tr>
+                          <td colspan="10">No standings available for <%= league %>.</td>
+                        </tr>
+                      <% } %>
+                    </tbody>
+                  </table>
+                <% }); %>
+                <% if (Object.keys(standings).length === 0) { %>
+                  <p>No stats to show</p>
+                <% } %>
+              </div>
             </div>
             <div class="tab" id="teams">
               <h1>Teams</h1>
               <% if (teams && teams.length> 0) { %>
                 <% teams.forEach(team=> { %>
                   <div class="team-card">
-                    <h3>
-                      <%= team.name %>
-                    </h3>
-                    <p>Number of Players: <%= team.number_of_players %>
-                    </p>
-                    <p>League: <%= team.league %>
-                    </p>
-                    <p>Season: <%= team.season %>
-                    </p>
+                    <h3><%= team.name %></h3>
+                    <p>Number of Players: <%= team.number_of_players %></p>
+                    <p>League: <%= team.league %></p>
+                    <p>Season: <%= team.season %></p>
+                    <button class="delete-team" data-team-id="<%= team.id %>">Delete</button>
                   </div>
-                  <% }); %>
-                    <% } else { %>
-                      <p>No teams available.</p>
-                      <% } %>
+                <% }); %>
+              <% } else { %>
+                <p>No teams available.</p>
+              <% } %>
+              <button class="add-team-btn" onclick="document.getElementById('teamDialog').showModal();">+Add Team</button>
             </div>
-            <div class="tab" id="player-stats">
-              <h1>Player Stats</h1>
-              <div class="player-stats-container">
-                <div class="player-cards-container">
-                  <% if (players && players.length > 0) { %>
-                    <% players.forEach(player => { %>
-                      <div class="player-card">
-                        <div class="player-image">
-                          <img src="/images/boy.png" alt="<%= player.name %>">
-                        </div>
-                        <div class="player-info">
-                          <h2><%= player.name %></h2>
-                          <p>Team: <%= player.team %></p>
-                          <p>Position: <%= player.position %></p>
-                          <p>Age: <%= player.age %></p>
-                          <p>Jersey Number: <%= player.number %></p>
-                          <p>Goals: <%= player.goals %></p>
-                          <p>Red Cards: <%= player.red_cards %></p>
-                          <p>Yellow Cards: <%= player.yellow_cards %></p>
-                        </div>
+            <div class="tab" id="stats">
+              <h1>Statistics with D3js</h1>
+              <div class="stats-container">
+                <div class="right">
+                  <div id="graph" class="tab-content">
+                    <div class="horizontal-menu">
+                      <ul>
+                        <li><a href="#teams" class="active" onclick="showTeamsView()">Teams</a></li>
+                        <li><a href="#players" onclick="showPlayersView()">Players</a></li>
+                      </ul>
+                      <select id="league-filter" class="league-filter">
+                        <option value="all">All Leagues</option>
+                        <% Object.keys(standings).forEach(leagueId => { %>
+                          <option value="<%= leagueId %>">League <%= leagueId %></option>
+                        <% }); %>
+                      </select>
+                    </div>
+                    
+                    <!-- Teams View Container -->
+                    <div id="teams-view" class="data-view">
+                      <div class="search">
+                        <input type="text" id="team-search" placeholder="Search teams..." oninput="filterTeams()">
                       </div>
-                    <% }); %>
-                  <% } else { %>
-                    <p>No players available.</p>
-                  <% } %>
-                </div>
-                
-              </div>
-            </div>
-          </div>
-          <div class="tab" id="stats">
-            <h1>Statistics with D3js</h1>
-            <div class="stats-container">
-              <div class="right">
-                <div id="graph" class="tab-content">
-                  <div class="horizontal-menu">
-                    <ul>
-                      <li><a href="#teams" class="active" onclick="showTeamsView()">Teams</a></li>
-                      <li><a href="#players" onclick="showPlayersView()">Players</a></li>
-                    </ul>
-                    <select id="league-filter" class="league-filter">
-                      <option value="all">All Leagues</option>
-                      <% Object.keys(standings).forEach(leagueId => { %>
-                        <option value="<%= leagueId %>">League <%= leagueId %></option>
-                      <% }); %>
-                    </select>
-                  </div>
-                  
-                  <!-- Teams View Container -->
-                  <div id="teams-view" class="data-view">
-                    <div class="search">
-                      <input type="text" id="team-search" placeholder="Search teams..." oninput="filterTeams()">
+                      <div id="standings-chart"></div>
+                      <!-- Team Metrics Container -->
+                      <div id="team-metrics" class="metrics-container"></div>
                     </div>
-                    <div id="standings-chart"></div>
-                  </div>
-                  
-                  <!-- Players View Container -->
-                  <div id="players-view" class="data-view" style="display:none">
-                    <div class="search">
-                      <input type="text" id="player-search" placeholder="Search players..." oninput="filterPlayers()">
+                    
+                    <!-- Players View Container -->
+                    <div id="players-view" class="data-view" style="display:none">
+                      <div class="search">
+                        <input type="text" id="player-search" placeholder="Search players..." oninput="filterPlayers()">
+                      </div>
+                      <div id="players-chart"></div>
+                      <!-- Player Metrics Container -->
+                      <div id="player-metrics" class="metrics-container"></div>
                     </div>
-                    <div id="players-chart"></div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          
-          <script src="https://d3js.org/d3.v7.min.js"></script>
-          <script>
-            // Pass data from EJS to JS
-            window.appData = {
-              standings: <%- JSON.stringify(typeof standings !== 'undefined' ? standings : {}) %>,
-              players: <%- JSON.stringify(typeof players !== 'undefined' ? players : []) %>,
-              leagues: <%- JSON.stringify(
-                typeof leagues !== 'undefined' 
-                  ? leagues 
-                  : (typeof standings !== 'undefined' ? Object.keys(standings).map(id => ({ id, name: `League ${id}` })) : [])
-              ) %>
-            };
-          </script>
-          <script src="/js/stats.js"></script>
           <div class="tab" id="manage-users">
             <h1>Manage Users</h1>
             <% if (users && users.length> 0) { %>
@@ -336,6 +281,22 @@
         </div>
       </div>
     </div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+      // Pass data from EJS to JS
+      window.appData = {
+        standings: <%- JSON.stringify(typeof standings !== 'undefined' ? standings : {}) %>,
+        players: <%- JSON.stringify(typeof players !== 'undefined' ? players : []) %>,
+        stats: <%- JSON.stringify(typeof stats !== 'undefined' ? stats : {}) %>,
+        matches: <%- JSON.stringify(typeof matches !== 'undefined' ? matches : []) %>,
+        leagues: <%- JSON.stringify(
+          typeof leagues !== 'undefined' 
+            ? leagues 
+            : (typeof standings !== 'undefined' ? Object.keys(standings).map(id => ({ id, name: `League ${id}` })) : [])
+        ) %>
+      };
+    </script>
+    <script src="/js/stats.js"></script>
     <script src="/js/dashboards.js"></script>
     <script src="/js/createUser.js"></script>
 </body>

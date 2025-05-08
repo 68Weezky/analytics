@@ -4,11 +4,6 @@ const router = express.Router();
 const url = process.env.DIRECTUS_URL;
 const accessToken = process.env.DIRECTUS_TOKEN;
 
-// Create team lookup map
-const teamMap = {};
-teams.forEach(team => {
-    teamMap[team.id] = team.name; // or team object if you need more info
-});
 // Query function for Directus API
 async function query(path, config) {
     try {
@@ -133,7 +128,8 @@ async function getLeagues() {
         throw error;
     }
 }
-async function getStats(standings, players, teamMap = {}) {
+
+async function getStats(standings, players, matches, teamMap = {}) {
     try {
         if (!standings || Object.keys(standings).length === 0) {
             throw new Error('No standings data provided');
@@ -146,16 +142,153 @@ async function getStats(standings, players, teamMap = {}) {
             bestDefenses: [],
             highestScoringTeams: [],
             leagueStats: {},
+            teamMatchStats: {},
+            playerStats: [],
             averages: {
                 goalsPerTeam: 0,
-                pointsPerTeam: 0
+                pointsPerTeam: 0,
+                passesPerMatch: 0,
+                foulsPerMatch: 0,
+                shotsPerMatch: 0
             },
             meta: {
                 totalLeagues: Object.keys(standings).length,
                 totalTeams: 0,
-                totalPlayers: players?.length || 0
+                totalPlayers: players?.length || 0,
+                totalMatches: matches?.length || 0
             }
         };
+
+        // Process matches to calculate team statistics
+        if (matches?.length > 0) {
+            // First, initialize teamMatchStats for all teams
+            matches.forEach(match => {
+                const { home_team, away_team } = match;
+                if (!stats.teamMatchStats[home_team]) {
+                    stats.teamMatchStats[home_team] = {
+                        matches: [],
+                        totalPasses: 0,
+                        totalFouls: 0,
+                        totalShots: 0,
+                        matchesPlayed: 0
+                    };
+                }
+                if (!stats.teamMatchStats[away_team]) {
+                    stats.teamMatchStats[away_team] = {
+                        matches: [],
+                        totalPasses: 0,
+                        totalFouls: 0,
+                        totalShots: 0,
+                        matchesPlayed: 0
+                    };
+                }
+            });
+
+            // Then process each match
+            matches.forEach(match => {
+                const { home_team, away_team, home_passes, away_passes, home_fouls, away_fouls, home_shots, away_shots } = match;
+                
+                // Add match to team's matches array
+                stats.teamMatchStats[home_team].matches.push({
+                    ...match,
+                    isHome: true,
+                    teamPasses: parseInt(home_passes) || 0,
+                    teamFouls: parseInt(home_fouls) || 0,
+                    teamShots: parseInt(home_shots) || 0,
+                    totalPasses: (parseInt(home_passes) || 0) + (parseInt(away_passes) || 0),
+                    totalFouls: (parseInt(home_fouls) || 0) + (parseInt(away_fouls) || 0),
+                    totalShots: (parseInt(home_shots) || 0) + (parseInt(away_shots) || 0)
+                });
+
+                stats.teamMatchStats[away_team].matches.push({
+                    ...match,
+                    isHome: false,
+                    teamPasses: parseInt(away_passes) || 0,
+                    teamFouls: parseInt(away_fouls) || 0,
+                    teamShots: parseInt(away_shots) || 0,
+                    totalPasses: (parseInt(home_passes) || 0) + (parseInt(away_passes) || 0),
+                    totalFouls: (parseInt(home_fouls) || 0) + (parseInt(away_fouls) || 0),
+                    totalShots: (parseInt(home_shots) || 0) + (parseInt(away_shots) || 0)
+                });
+
+                // Update team totals
+                stats.teamMatchStats[home_team].totalPasses += parseInt(home_passes) || 0;
+                stats.teamMatchStats[home_team].totalFouls += parseInt(home_fouls) || 0;
+                stats.teamMatchStats[home_team].totalShots += parseInt(home_shots) || 0;
+                stats.teamMatchStats[home_team].matchesPlayed++;
+
+                stats.teamMatchStats[away_team].totalPasses += parseInt(away_passes) || 0;
+                stats.teamMatchStats[away_team].totalFouls += parseInt(away_fouls) || 0;
+                stats.teamMatchStats[away_team].totalShots += parseInt(away_shots) || 0;
+                stats.teamMatchStats[away_team].matchesPlayed++;
+            });
+        }
+
+        // Process standings to update team statistics
+        Object.keys(standings).forEach(league => {
+            if (!standings[league]?.length) return;
+
+            const leagueTeams = standings[league];
+            stats.meta.totalTeams += leagueTeams.length;
+
+            leagueTeams.forEach(team => {
+                if (!stats.teamMatchStats[team.name]) {
+                    stats.teamMatchStats[team.name] = {
+                        matches: [],
+                        totalPasses: 0,
+                        totalFouls: 0,
+                        totalShots: 0,
+                        matchesPlayed: 0
+                    };
+                }
+
+                // Update goals from standings
+                stats.teamMatchStats[team.name].goalsScored = team.goals_for || 0;
+                stats.teamMatchStats[team.name].goalsConceded = team.goals_against || 0;
+                stats.teamMatchStats[team.name].matchesPlayed = team.games_played || 0;
+            });
+        });
+
+        // Process players data
+        if (players?.length > 0) {
+            // Create team map if not provided
+            const effectiveTeamMap = Object.keys(teamMap).length > 0 ? teamMap : 
+                Object.keys(stats.teamMatchStats).reduce((map, team) => {
+                    map[team] = team;
+                    return map;
+                }, {});
+
+            // Process player statistics
+            stats.playerStats = players.map(player => ({
+                name: player.name,
+                team: effectiveTeamMap[player.team_id] || 'Unknown Team',
+                goals: player.goals || 0,
+                assists: player.assists || 0,
+                yellowCards: player.yellow_cards || 0,
+                redCards: player.red_cards || 0,
+                passes: player.passes || 0,
+                fouls: player.fouls || 0,
+                shots: player.shots || 0
+            }));
+
+            // Top scorers
+            stats.topScorers = [...stats.playerStats]
+                .filter(player => player.goals > 0)
+                .sort((a, b) => b.goals - a.goals)
+                .slice(0, 5);
+
+            // Players with most cards
+            stats.mostCards = [...stats.playerStats]
+                .filter(player => (player.yellowCards > 0 || player.redCards > 0))
+                .sort((a, b) => (b.yellowCards + b.redCards) - (a.yellowCards + a.redCards))
+                .slice(0, 5);
+
+            // Most assists
+            stats.topAssisters = [...stats.playerStats]
+                .filter(player => player.assists > 0)
+                .sort((a, b) => b.assists - a.assists)
+                .slice(0, 5);
+        }
 
         // Process standings to find top teams across all leagues
         const allTeams = [];
@@ -201,63 +334,16 @@ async function getStats(standings, players, teamMap = {}) {
             stats.averages.pointsPerTeam = totalPoints / stats.meta.totalTeams;
         }
 
-        // Sort and get overall top teams (top 5)
-        stats.topTeams = [...allTeams]
-            .sort((a, b) => (b.points || 0) - (a.points || 0) || 
-                          (b.goal_difference || 0) - (a.goal_difference || 0))
-            .slice(0, 5);
+        // Calculate match averages if matches exist
+        if (matches?.length > 0) {
+            const totalPasses = Object.values(stats.teamMatchStats).reduce((sum, team) => sum + team.totalPasses, 0);
+            const totalFouls = Object.values(stats.teamMatchStats).reduce((sum, team) => sum + team.totalFouls, 0);
+            const totalShots = Object.values(stats.teamMatchStats).reduce((sum, team) => sum + team.totalShots, 0);
 
-        // Process players data
-        if (players?.length > 0) {
-            // Create team map if not provided
-            const effectiveTeamMap = Object.keys(teamMap).length > 0 ? teamMap : 
-                allTeams.reduce((map, team) => {
-                    map[team.id] = team.name;
-                    return map;
-                }, {});
-
-            // Top scorers
-            stats.topScorers = [...players]
-                .filter(player => player.goals > 0)
-                .sort((a, b) => (b.goals || 0) - (a.goals || 0))
-                .slice(0, 5)
-                .map(player => ({
-                    ...player,
-                    team_name: effectiveTeamMap[player.team_id] || 'Unknown Team'
-                }));
-
-            // Top assisters (if data exists)
-            if (players.some(p => p.assists !== undefined)) {
-                stats.topAssisters = [...players]
-                    .filter(player => player.assists > 0)
-                    .sort((a, b) => (b.assists || 0) - (a.assists || 0))
-                    .slice(0, 5)
-                    .map(player => ({
-                        ...player,
-                        team_name: effectiveTeamMap[player.team_id] || 'Unknown Team'
-                    }));
-            }
-
-            // Clean sheets (for goalkeepers/defenders)
-            if (players.some(p => p.clean_sheets !== undefined)) {
-                stats.mostCleanSheets = [...players]
-                    .filter(player => player.clean_sheets > 0)
-                    .sort((a, b) => (b.clean_sheets || 0) - (a.clean_sheets || 0))
-                    .slice(0, 5);
-            }
+            stats.averages.passesPerMatch = totalPasses / matches.length;
+            stats.averages.foulsPerMatch = totalFouls / matches.length;
+            stats.averages.shotsPerMatch = totalShots / matches.length;
         }
-
-        // Best defenses (lowest goals against)
-        stats.bestDefenses = [...allTeams]
-            .filter(team => team.goals_against !== undefined)
-            .sort((a, b) => (a.goals_against || Infinity) - (b.goals_against || Infinity))
-            .slice(0, 5);
-
-        // Highest scoring teams
-        stats.highestScoringTeams = [...allTeams]
-            .filter(team => team.goals_for !== undefined)
-            .sort((a, b) => (b.goals_for || 0) - (a.goals_for || 0))
-            .slice(0, 5);
 
         return stats;
     } catch (error) {
@@ -266,121 +352,134 @@ async function getStats(standings, players, teamMap = {}) {
     }
 }
 
-// Report Form
+// League route
 router.get('/', async (req, res) => {
-    user = req.session.user;
+    const user = req.session.user;
 
-    const events = await getEvents();
-    const matches = await getMatches();
-    const teams = await getTeams();
-    const players = await getPlayers();
-    const seasons = await getSeasons();
-    const leagues = await getLeagues();
+    try {
+        // Fetch all data in parallel for better performance
+        const [events, matches, teams, players, seasons, leagues] = await Promise.all([
+            getEvents(),
+            getMatches(),
+            getTeams(),
+            getPlayers(),
+            getSeasons(),
+            getLeagues()
+        ]);
 
-    // Fetch matches data
-    const matchesData = await getMatches();
-
-    // Initialize standings object
-    const standings = {};
-
-    // Process match results to calculate standings
-    matchesData.forEach(match => {
-        const { league, home_team, away_team, home_goals, away_goals } = match;
-
-        // Initialize league if not already present
-        if (!standings[league]) {
-            standings[league] = {};
-        }
-
-        // Initialize team stats if not already present
-        if (!standings[league][home_team]) {
-            standings[league][home_team] = {
-                name: home_team,
-                wins: 0,
-                losses: 0,
-                draws: 0,
-                goals_for: 0,
-                goals_against: 0,
-                goal_difference: 0,
-                points: 0,
-                games_played: 0
-            };
-        }
-        if (!standings[league][away_team]) {
-            standings[league][away_team] = {
-                name: away_team,
-                wins: 0,
-                losses: 0,
-                draws: 0,
-                goals_for: 0,
-                goals_against: 0,
-                goal_difference: 0,
-                points: 0,
-                games_played: 0
-            };
-        }
-
-        // Update goals for and against
-        standings[league][home_team].goals_for += home_goals;
-        standings[league][home_team].goals_against += away_goals;
-        standings[league][away_team].goals_for += away_goals;
-        standings[league][away_team].goals_against += home_goals;
-
-        // Determine match result and update stats
-        if (home_goals > away_goals) {
-            standings[league][home_team].wins++;
-            standings[league][home_team].points += 3;
-            standings[league][away_team].losses++;
-        } else if (home_goals < away_goals) {
-            standings[league][away_team].wins++;
-            standings[league][away_team].points += 3;
-            standings[league][home_team].losses++;
-        } else {
-            standings[league][home_team].draws++;
-            standings[league][home_team].points += 1;
-            standings[league][away_team].draws++;
-            standings[league][away_team].points += 1;
-        }
-
-        standings[league][home_team].games_played++;
-        standings[league][away_team].games_played++;
-    });
-
-    // Convert standings object to array for rendering
-    const standingsArray = {};
-    Object.keys(standings).forEach(league => {
-        standingsArray[league] = Object.values(standings[league]);
-
-        // Calculate goal difference
-        standingsArray[league].forEach(team => {
-            team.goal_difference = team.goals_for - team.goals_against;
+        // Create team lookup map
+        const teamMap = {};
+        teams.forEach(team => {
+            teamMap[team.id] = team.name; // or team object if you need more info
         });
 
-        // Sort standings by points (descending) and goal difference (descending)
-        standingsArray[league].sort((a, b) => {
-            if (b.points !== a.points) {
-                return b.points - a.points;
-            } else {
-                return b.goal_difference - a.goal_difference;
+        // Initialize standings object
+        const standings = {};
+
+        // Process match results to calculate standings
+        matches.forEach(match => {
+            // Skip matches without a league
+            if (!match.league) return;
+
+            const { league, home_team, away_team, home_goals, away_goals } = match;
+
+            // Initialize league if not already present
+            if (!standings[league]) {
+                standings[league] = {};
             }
+
+            // Initialize team stats if not already present
+            if (!standings[league][home_team]) {
+                standings[league][home_team] = {
+                    name: home_team,
+                    wins: 0,
+                    losses: 0,
+                    draws: 0,
+                    goals_for: 0,
+                    goals_against: 0,
+                    goal_difference: 0,
+                    points: 0,
+                    games_played: 0
+                };
+            }
+            if (!standings[league][away_team]) {
+                standings[league][away_team] = {
+                    name: away_team,
+                    wins: 0,
+                    losses: 0,
+                    draws: 0,
+                    goals_for: 0,
+                    goals_against: 0,
+                    goal_difference: 0,
+                    points: 0,
+                    games_played: 0
+                };
+            }
+
+            // Update goals for and against
+            standings[league][home_team].goals_for += home_goals;
+            standings[league][home_team].goals_against += away_goals;
+            standings[league][away_team].goals_for += away_goals;
+            standings[league][away_team].goals_against += home_goals;
+
+            // Determine match result and update stats
+            if (home_goals > away_goals) {
+                standings[league][home_team].wins++;
+                standings[league][home_team].points += 3;
+                standings[league][away_team].losses++;
+            } else if (home_goals < away_goals) {
+                standings[league][away_team].wins++;
+                standings[league][away_team].points += 3;
+                standings[league][home_team].losses++;
+            } else {
+                standings[league][home_team].draws++;
+                standings[league][home_team].points += 1;
+                standings[league][away_team].draws++;
+                standings[league][away_team].points += 1;
+            }
+
+            standings[league][home_team].games_played++;
+            standings[league][away_team].games_played++;
         });
-    });
 
-    // Generate stats   
-    const stats = await getStats(standings, players, teamMap);
+        // Convert standings object to array for rendering
+        const standingsArray = {};
+        Object.keys(standings).forEach(league => {
+            standingsArray[league] = Object.values(standings[league]);
 
+            // Calculate goal difference
+            standingsArray[league].forEach(team => {
+                team.goal_difference = team.goals_for - team.goals_against;
+            });
 
-    res.render('league', {
-        user: user,
-        events: events,
-        matches: matches,
-        teams: teams,
-        players: players,
-        seasons: seasons,
-        leagues: leagues,
-        stats: stats,
-        standings: standingsArray // Pass the standings array to the template
-    });
+            // Sort standings by points (descending) and goal difference (descending)
+            standingsArray[league].sort((a, b) => {
+                if (b.points !== a.points) {
+                    return b.points - a.points;
+                } else {
+                    return b.goal_difference - a.goal_difference;
+                }
+            });
+        });
+
+        // Generate statistics
+        const stats = await getStats(standingsArray, players, matches, teamMap);
+
+        res.render('league', {
+            user: user,
+            events: events,
+            matches: matches,
+            teams: teams,
+            players: players,
+            seasons: seasons,
+            leagues: leagues,
+            stats: stats,
+            standings: standingsArray
+        });
+    } catch (error) {
+        console.error('Error in league route:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 module.exports = router;

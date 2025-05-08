@@ -35,9 +35,6 @@
           <div class="tab-btn" onclick="openTab(event, 'standings')">
             Standings
           </div>
-          <div class="tab-btn" onclick="openTab(event, 'player-stats')">
-            Player stats
-          </div>
           <div class="tab-btn" onclick="openTab(event, 'stats')">
             stats
           </div>
@@ -194,6 +191,8 @@
                         <input type="text" id="team-search" placeholder="Search teams..." oninput="filterTeams()">
                       </div>
                       <div id="standings-chart"></div>
+                      <!-- Team Metrics Container -->
+                      <div id="team-metrics" class="metrics-container"></div>
                     </div>
                     
                     <!-- Players View Container -->
@@ -202,18 +201,21 @@
                         <input type="text" id="player-search" placeholder="Search players..." oninput="filterPlayers()">
                       </div>
                       <div id="players-chart"></div>
+                      <!-- Player Metrics Container -->
+                      <div id="player-metrics" class="metrics-container"></div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            
             <script src="https://d3js.org/d3.v7.min.js"></script>
             <script>
               // Pass data from EJS to JS
               window.appData = {
                 standings: <%- JSON.stringify(typeof standings !== 'undefined' ? standings : {}) %>,
                 players: <%- JSON.stringify(typeof players !== 'undefined' ? players : []) %>,
+                stats: <%- JSON.stringify(typeof stats !== 'undefined' ? stats : {}) %>,
+                matches: <%- JSON.stringify(typeof matches !== 'undefined' ? matches : []) %>,
                 leagues: <%- JSON.stringify(
                   typeof leagues !== 'undefined' 
                     ? leagues 
@@ -222,35 +224,6 @@
               };
             </script>
             <script src="/js/stats.js"></script>
-            <div class="tab" id="player-stats">
-              <h1>Player Stats</h1>
-              <div class="player-stats-container">
-                <div class="player-cards-container">
-                  <% if (players && players.length > 0) { %>
-                    <% players.forEach(player => { %>
-                      <div class="player-card">
-                        <div class="player-image">
-                          <img src="/images/boy.png" alt="<%= player.name %>">
-                        </div>
-                        <div class="player-info">
-                          <h2><%= player.name %></h2>
-                          <p>Team: <%= player.team %></p>
-                          <p>Position: <%= player.position %></p>
-                          <p>Age: <%= player.age %></p>
-                          <p>Jersey Number: <%= player.number %></p>
-                          <p>Goals: <%= player.goals %></p>
-                          <p>Red Cards: <%= player.red_cards %></p>
-                          <p>Yellow Cards: <%= player.yellow_cards %></p>
-                        </div>
-                      </div>
-                    <% }); %>
-                  <% } else { %>
-                    <p>No players available.</p>
-                  <% } %>
-                </div>
-                
-              </div>
-            </div>
           </div>
         </div>
       </div>

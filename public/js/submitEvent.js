@@ -125,8 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const homeTeam = document.getElementById('homeTeam').value;
         const venue = document.getElementById('venue').value;
         const awayTeam = document.getElementById('awayTeam').value;
+        const league = document.getElementById('matchLeague').value;
 
-        if (!date || !homeTeam || !venue || !awayTeam) {
+        if (!date || !homeTeam || !venue || !awayTeam || !league) {
             alert('Please fill in all fields.');
             return;
         } else {
@@ -134,9 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 date: date,
                 homeTeam: homeTeam,
                 venue: venue,
-                awayTeam: awayTeam
+                awayTeam: awayTeam,
+                league: league
             };
-
+            console.log(matchData)
             try {
                 const response = await fetch('/submit-match', {
                     method: 'POST',
@@ -184,9 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const homePasses = document.getElementById('homePasses').value;
         const awayPasses = document.getElementById('awayPasses').value;
         const finalScore = document.getElementById('finalScore').value;
-        const matchLeague = document.getElementById('matchLeague').value;
 
-        if (!matchId || !awayShots || !homeShots || !homeFouls || !awayFouls || !homeGoals || !awayGoals || !homePasses || !awayPasses || !finalScore || !matchLeague) {
+        if (!matchId || !awayShots || !homeShots || !homeFouls || !awayFouls || !homeGoals || !awayGoals || !homePasses || !awayPasses || !finalScore) {
             alert('Please fill in all fields.');
             return;
         } else {
@@ -201,7 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 homePasses: homePasses,
                 awayPasses: awayPasses,
                 finalScore: finalScore,
-                matchLeague: matchLeague
             };
 
             try {
