@@ -952,26 +952,26 @@ app.post('/update-user', async (req, res) => {
     try {
         const { id, name, email, role, password } = req.body;
 
-        console.log(id)
-
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
+        // Create base user data without password
         const userData = {
             id,
             name,
             email,
-            role,
-            password: hashedPassword
+            role
+        };
+
+        // Only hash and include password if it's provided
+        if (password && password.trim() !== '') {
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+            userData.password = hashedPassword;
         }
 
         const updatedData = await updateUsers(userData);
 
-        // console.log("Updated", updatedData)
-
         res.status(201).json({ message: 'Updated successfully', updatedData });
     } catch (error) {
-        console.error('Error in deletion:', error);
-        res.status(500).json({ message: 'Failed to delete. Please try again.' });
+        console.error('Error updating user:', error);
+        res.status(500).json({ message: 'Failed to update user. Please try again.' });
     }
 });
 

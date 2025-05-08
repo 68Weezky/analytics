@@ -482,4 +482,44 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Get match by ID
+router.get('/get-match/:id', async (req, res) => {
+    try {
+        const matchId = req.params.id;
+        const response = await query(`/items/matches/${matchId}`, {
+            method: 'GET'
+        });
+
+        if (response.ok) {
+            const matchData = await response.json();
+            res.json(matchData.data);
+        } else {
+            res.status(404).json({ message: 'Match not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching match:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// Get player by ID
+router.get('/get-player/:id', async (req, res) => {
+    try {
+        const playerId = req.params.id;
+        const response = await query(`/items/players/${playerId}`, {
+            method: 'GET'
+        });
+
+        if (response.ok) {
+            const playerData = await response.json();
+            res.json(playerData.data);
+        } else {
+            res.status(404).json({ message: 'Player not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching player:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 module.exports = router;

@@ -394,17 +394,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const playerId = document.getElementById('playerId').value.trim();
         const goals = document.getElementById('goals').value.trim();
+        const assists = document.getElementById('assists').value.trim();
         const redCards = document.getElementById('red_cards').value.trim();
         const yellowCards = document.getElementById('yellow_cards').value.trim();
         const playerManager = document.getElementById('new_manager').value.trim();
 
-        if (!playerId || !goals || !redCards || !yellowCards || !playerManager) {
+        if (!playerId || !goals ||!assists|| !redCards || !yellowCards || !playerManager) {
             alert('Please fill in all fields.');
             return;
         } else {
             const updateData = {
                 id: playerId,
                 goals: goals,
+                assists: assists,
                 red_cards: redCards,
                 yellow_cards: yellowCards,
                 manager: playerManager
@@ -673,14 +675,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function openUpdateResultDialog(matchId) {
-    document.getElementById('matchId').value = matchId;
-    document.getElementById('updateResultDialog').showModal();
+async function openUpdateResultDialog(matchId) {
+    try {
+        // Fetch match data from the database
+        const response = await fetch(`/league-manager/get-match/${matchId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch match data');
+        }
+        const matchData = await response.json();
+
+        // Pre-fill the form fields with default values of 0 for missing data
+        document.getElementById('matchId').value = matchId;
+        document.getElementById('awayShots').value = matchData.away_shots || 0;
+        document.getElementById('homeShots').value = matchData.home_shots || 0;
+        document.getElementById('homeFouls').value = matchData.home_fouls || 0;
+        document.getElementById('awayFouls').value = matchData.away_fouls || 0;
+        document.getElementById('homeGoals').value = matchData.home_goals || 0;
+        document.getElementById('awayGoals').value = matchData.away_goals || 0;
+        document.getElementById('homePasses').value = matchData.home_passes || 0;
+        document.getElementById('awayPasses').value = matchData.away_passes || 0;
+        document.getElementById('finalScore').value = matchData.final_score || '0-0';
+
+        // Show the dialog
+        document.getElementById('updateResultDialog').showModal();
+    } catch (error) {
+        console.error('Error fetching match data:', error);
+        alert('Error loading match data. Please try again.');
+    }
 }
 
-function openUpdatePlayerDialog(playerId) {
-    document.getElementById('playerId').value = playerId;
-    document.getElementById('updatePlayerDialog').showModal();
+async function openUpdatePlayerDialog(playerId) {
+    try {
+        // Fetch player data from the database
+        const response = await fetch(`/league-manager/get-player/${playerId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch player data');
+        }
+        const playerData = await response.json();
+
+        // Pre-fill the form fields with default values of 0 for missing data
+        document.getElementById('playerId').value = playerId;
+        document.getElementById('goals').value = playerData.goals || 0;
+        document.getElementById('assists').value = playerData.assists || 0;
+        document.getElementById('red_cards').value = playerData.red_cards || 0;
+        document.getElementById('yellow_cards').value = playerData.yellow_cards || 0;
+        document.getElementById('new_manager').value = playerData.tm || '';
+
+        // Show the dialog
+        document.getElementById('updatePlayerDialog').showModal();
+    } catch (error) {
+        console.error('Error fetching player data:', error);
+        alert('Error loading player data. Please try again.');
+    }
 }
 
 function openUpdateSeasonDialog(seasonId) {

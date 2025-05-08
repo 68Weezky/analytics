@@ -272,33 +272,65 @@ body {
 }
 
 .profile-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+    max-width: 800px;
     width: 100%;
-    background-color: #fff;
-    padding: 1.5em;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.profile-card h1 {
+    color: #1e293b;
+    font-size: 28px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 15px;
+}
+
+.profile-card p {
+    color: #4b5563;
+    font-size: 16px;
+    margin: 12px 0;
+    display: flex;
+    align-items: center;
+}
+
+.profile-card p::before {
+    content: "•";
+    color: #1e293b;
+    font-weight: bold;
+    margin-right: 10px;
 }
 
 .event-card {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 1em;
-    margin-bottom: 1em;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    max-width: 800px;
+    width: 100%;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
 }
 
 .event-card h3 {
     color: #1e293b;
-    margin-bottom: 0.5em;
+    font-size: 20px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
 }
 
 .event-card p {
-    color: #555;
-    margin-bottom: 0.25em;
+    color: #4b5563;
+    margin: 10px 0;
+    font-size: 15px;
 }
 
 .add-event-btn {
@@ -372,23 +404,34 @@ body {
 
 /* Existing styles for events */
 .match-card {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 1em;
-    margin-bottom: 1em;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    max-width: 800px;
+    width: 100%;
     display: flex;
     flex-direction: column;
 }
 
+.match-card:hover {
+    transform: translateY(-5px);
+}
+
 .match-card h3 {
     color: #1e293b;
-    margin-bottom: 0.5em;
+    font-size: 20px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
 }
 
 .match-card p {
-    color: #555;
-    margin-bottom: 0.25em;
+    color: #4b5563;
+    margin: 10px 0;
+    font-size: 15px;
 }
 
 .match-actions {
@@ -520,22 +563,33 @@ body {
 
 /* Existing styles for events */
 .team-card {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 1em;
-    margin-bottom: 1em;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    max-width: 800px;
+    width: 100%;
     position: relative;
+}
+
+.team-card:hover {
+    transform: translateY(-5px);
 }
 
 .team-card h3 {
     color: #1e293b;
-    margin-bottom: 0.5em;
+    font-size: 20px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
 }
 
 .team-card p {
-    color: #555;
-    margin-bottom: 0.25em;
+    color: #4b5563;
+    margin: 10px 0;
+    font-size: 15px;
 }
 
 .add-team-btn {
@@ -1093,25 +1147,48 @@ select {
 /* Style for the standings table */
 .standings-table {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.standings-table th,
-.standings-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 15px;
 }
 
 .standings-table th {
-    background-color: #f2f2f2;
+    background-color: #1e293b;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.standings-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+    color: #4b5563;
+}
+
+.standings-table tr:hover {
+    background-color: #f8fafc;
 }
 
 /* Style for the standings table container */
 .standings-container {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    max-width: 1200px;
+    width: 100%;
     overflow-x: auto;
-    /* Enable horizontal scrolling on smaller screens */
+}
+
+.standings-container h2 {
+    color: #1e293b;
+    font-size: 22px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .update-user {
@@ -1503,4 +1580,165 @@ a {
     width: 12px;
     height: 12px;
     border-radius: 2px;
+}
+
+.content-container {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 20px 0;
+}
+
+.tab {
+  display: none;
+  width: 100%;
+  padding: 20px;
+}
+
+.tab.active {
+  display: block;
+}
+
+.tab h1 {
+  color: #1e293b;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.player-card, .league-card, .season-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.player-card:hover, .league-card:hover, .season-card:hover {
+  transform: translateY(-5px);
+}
+
+.player-card h3, .league-card h3, .season-card h3 {
+  color: #1e293b;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.player-card p, .league-card p, .season-card p {
+  color: #4b5563;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.add-player-btn, .add-league-btn, .add-season-btn {
+  background-color: #1e293b;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.add-player-btn:hover, .add-league-btn:hover, .add-season-btn:hover {
+  background-color: #374151;
+}
+
+.delete-player, .delete-league-btn, .delete-season-btn {
+  background-color: #dc3545;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  margin-right: 10px;
+}
+
+.delete-player:hover, .delete-league-btn:hover, .delete-season-btn:hover {
+  background-color: #c82333;
+}
+
+.update-player, .update-league-btn, .update-season-btn {
+  background-color: #1e293b;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.update-player:hover, .update-league-btn:hover, .update-season-btn:hover {
+  background-color: #374151;
+}
+
+@media screen and (max-width: 768px) {
+  .content-container {
+    padding: 15px;
+  }
+  
+  .player-card, .league-card, .season-card {
+    padding: 15px;
+  }
+  
+  .add-player-btn, .add-league-btn, .add-season-btn,
+  .delete-player, .delete-league-btn, .delete-season-btn,
+  .update-player, .update-league-btn, .update-season-btn {
+    width: 100%;
+    margin: 5px 0;
+  }
+}
+
+/* Events Section Styles */
+#events {
+  padding: 20px;
+}
+
+#events h1 {
+  color: #1e293b;
+  font-size: 28px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* Matches Section Styles */
+#matches {
+  padding: 20px;
+}
+
+#matches h1 {
+  color: #1e293b;
+  font-size: 28px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* Standings Section Styles */
+#standings {
+  padding: 20px;
+}
+
+#standings h1 {
+  color: #1e293b;
+  font-size: 28px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* Teams Section Styles */
+#teams {
+  padding: 20px;
+}
+
+#teams h1 {
+  color: #1e293b;
+  font-size: 28px;
+  margin-bottom: 25px;
+  text-align: center;
 }

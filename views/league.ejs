@@ -38,9 +38,6 @@
           Standings
         </div> 
         <div class="tab-btn">
-          Player stats
-        </div>
-        <div class="tab-btn">
           Stats
         </div>
         <div class="tab-btn">
@@ -209,6 +206,68 @@
               </div>
             </div>
           </div>
+          <div class="tab" id="manage-players">
+            <div class="content-container">
+              <h1>Manage Players</h1>
+              <% if (players && players.length> 0) { %>
+                <% players.forEach(player=> { %>
+                  <div class="player-card">
+                    <h3><%= player.name %></h3>
+                    <p>Team: <%= player.team %></p>
+                    <p>Goals: <%= player.goals %></p>
+                    <p>Assists: <%= player.assists %></p>
+                    <p>Red Cards: <%= player.red_cards %></p>
+                    <p>Yellow Cards: <%= player.yellow_cards %></p>
+                    <button class="delete-player" data-player-id="<%= player.id %>">Delete</button>
+                    <button class="update-player" data-player-id="<%= player.id %>" onclick="openUpdatePlayerDialog('<%= player.id %>')">Update Stats</button>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <p>No players available.</p>
+              <% } %>
+              <button class="add-player-btn" onclick="document.getElementById('playerDialog').showModal();">+Add Player</button>
+            </div>
+          </div>
+          <div class="tab" id="manage-leagues">
+            <div class="content-container">
+              <h1>Manage Leagues</h1>
+              <% if (leagues && leagues.length> 0) { %>
+                <% leagues.forEach(league=> { %>
+                  <div class="league-card">
+                    <h3><%= league.name %></h3>
+                    <p>Number of Teams: <%= league.number_of_teams %></p>
+                    <p>Status: <%= league.status %></p>
+                    <button class="delete-league-btn" data-league-id="<%= league.id %>">Delete</button>
+                    <button class="update-league-btn" data-league-id="<%= league.id %>" onclick="openUpdateLeagueDialog('<%= league.id %>')">Update Status</button>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <p>No leagues available.</p>
+              <% } %>
+              <button class="add-league-btn" onclick="document.getElementById('leagueDialog').showModal();">+Add League</button>
+            </div>
+          </div>
+          <div class="tab" id="manage-seasons">
+            <div class="content-container">
+              <h1>Manage Seasons</h1>
+              <% if (seasons && seasons.length> 0) { %>
+                <% seasons.forEach(season=> { %>
+                  <div class="season-card">
+                    <h3><%= season.name %></h3>
+                    <p>Start Date: <%= season.start_date %></p>
+                    <p>End Date: <%= season.end_date %></p>
+                    <p>Number of Teams: <%= season.number_of_teams %></p>
+                    <p>Status: <%= season.status %></p>
+                    <button class="delete-season-btn" data-season-id="<%= season.id %>">Delete</button>
+                    <button class="update-season-btn" data-season-id="<%= season.id %>" onclick="openUpdateSeasonDialog('<%= season.id %>')">Update Status</button>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <p>No seasons available.</p>
+              <% } %>
+              <button class="add-season-btn" onclick="document.getElementById('seasonDialog').showModal();">+Add Season</button>
+            </div>
+          </div>
         </div>
       </div>
       <script src="/js/dashboards.js"></script>
@@ -320,32 +379,6 @@
       <button type="button" onclick="document.getElementById('teamDialog').close();">Cancel</button>
     </div>
   </dialog>
-  <div class="tab" id="manage-players">
-    <h1>Manage Players</h1>
-    <% if (players && players.length> 0) { %>
-      <% players.forEach(player=> { %>
-        <div class="player-card">
-          <h3>
-            <%= player.name %>
-          </h3>
-          <p>Team: <%= player.team %>
-          </p>
-          <p>Goals: <%= player.goals %>
-          </p>
-          <p>Red Cards: <%= player.red_cards %>
-          </p>
-          <p>Yellow Cards: <%= player.yellow_cards %>
-          </p>
-          <button class="delete-player" data-player-id="<%= player.id %>">Delete</button>
-          <button class="update-player" data-player-id="<%= player.id %>"
-            onclick="openUpdatePlayerDialog('<%= player.id %>')">Update Stats</button>
-        </div>
-        <% }); %>
-          <% } else { %>
-            <p>No players available.</p>
-            <% } %>
-              <button class="add-player-btn" onclick="document.getElementById('playerDialog').showModal();">+Add
-                Player</button>
   <dialog class="player-dialog" id="playerDialog">
     <h2>Add New Player</h2>
     <form id="addPlayerForm">
@@ -380,6 +413,9 @@
       <label for="goals">Goals:</label>
       <input type="number" id="goals" name="goals" required>
 
+      <label for="assists">Assists:</label>
+      <input type="number" id="assists" name="assists" required>
+
       <label for="red_cards">Red Cards:</label>
       <input type="number" id="red_cards" name="red_cards" required>
 
@@ -394,29 +430,6 @@
         onclick="document.getElementById('updatePlayerDialog').close();">Cancel</button>
     </form>
   </dialog>
-</div>
-<div class="tab" id="manage-leagues">
-  <h1>Manage Leagues</h1>
-  <% if (leagues && leagues.length> 0) { %>
-    <% leagues.forEach(league=> { %>
-      <div class="league-card">
-        <h3>
-          <%= league.name %>
-        </h3>
-        <p>Number of Teams: <%= league.number_of_teams %>
-        </p>
-        <p>Status: <%= league.status %>
-        </p>
-        <button class="delete-league-btn" data-league-id="<%= league.id %>">Delete</button>
-        <button class="update-league-btn" data-league-id="<%= league.id %>"
-          onclick="openUpdateLeagueDialog('<%= league.id %>')">Update Status</button>
-      </div>
-      <% }); %>
-        <% } else { %>
-          <p>No leagues available.</p>
-          <% } %>
-            <button class="add-league-btn" onclick="document.getElementById('leagueDialog').showModal();">+Add
-              League</button>
   <dialog class="league-dialog" id="leagueDialog">
     <h2>Add New League</h2>
     <form id="addLeagueForm">
@@ -465,33 +478,6 @@
         onclick="document.getElementById('updateLeagueDialog').close();">Cancel</button>
     </form>
   </dialog>
-</div>
-<div class="tab" id="manage-seasons">
-  <h1>Manage seasons</h1>
-  <% if (seasons && seasons.length> 0) { %>
-    <% seasons.forEach(season=> { %>
-      <div class="season-card">
-        <h3>
-          <%= season.name %>
-        </h3>
-        <p>Start Date: <%= season.start_date %>
-        </p>
-        <p>End Date: <%= season.end_date %>
-        </p>
-        <p>Number of Teams: <%= season.number_of_teams %>
-        </p>
-        <p>Status: <%= season.status %>
-        </p>
-        <button class="delete-season-btn" data-season-id="<%= season.id %>">Delete</button>
-        <button class="update-season-btn" data-season-id="<%= season.id %>"
-          onclick="openUpdateSeasonDialog('<%= season.id %>')">Update Status</button>
-      </div>
-      <% }); %>
-        <% } else { %>
-          <p>No seasons available.</p>
-          <% } %>
-            <button class="add-season-btn" onclick="document.getElementById('seasonDialog').showModal();">+Add
-              Season</button>
   <dialog class="season-dialog" id="seasonDialog">
     <h2>Add New Season</h2>
     <form id="addSeasonForm">

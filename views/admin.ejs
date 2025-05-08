@@ -66,13 +66,13 @@
                     <p>End Date: <%= event.end_date %></p>
                     <p>Location: <%= event.location %></p>
                     <p>Description: <%= event.description %></p>
-                    <button class="delete-event-btn" data-event-id="<%= event.id %>">Delete this event</button>
+                    
                   </div>
                 <% }); %>
               <% } else { %>
                 <p>No events available.</p>
               <% } %>
-              <button class="add-event-btn" onclick="document.getElementById('eventDialog').showModal();">+ Add Event</button>
+              
             </div>
             <div class="tab" id="matches">
               <h1>Matches</h1>
@@ -83,14 +83,13 @@
                     <p>Venue: <%= match.venue %></p>
                     <p>Home Team: <%= match.home_team %></p>
                     <p>Away Team: <%= match.away_team %></p>
-                    <button class="delete-match" data-match-id="<%= match.id %>">Delete</button>
-                    <button class="update-match" data-match-id="<%= match.id %>">Update Results</button>
+                    
                   </div>
                 <% }); %>
               <% } else { %>
                 <p>No matches available.</p>
               <% } %>
-              <button class="add-match-btn" onclick="document.getElementById('matchDialog').showModal();">+Add Match</button>
+              
             </div>
             <div class="tab" id="standings">
               <h1>League Standings</h1>
@@ -150,13 +149,13 @@
                     <p>Number of Players: <%= team.number_of_players %></p>
                     <p>League: <%= team.league %></p>
                     <p>Season: <%= team.season %></p>
-                    <button class="delete-team" data-team-id="<%= team.id %>">Delete</button>
+                    
                   </div>
                 <% }); %>
               <% } else { %>
                 <p>No teams available.</p>
               <% } %>
-              <button class="add-team-btn" onclick="document.getElementById('teamDialog').showModal();">+Add Team</button>
+              
             </div>
             <div class="tab" id="stats">
               <h1>Statistics with D3js</h1>
@@ -199,104 +198,101 @@
                 </div>
               </div>
             </div>
+            <script src="https://d3js.org/d3.v7.min.js"></script>
+            <script>
+              // Pass data from EJS to JS
+              window.appData = {
+                standings: <%- JSON.stringify(typeof standings !== 'undefined' ? standings : {}) %>,
+                players: <%- JSON.stringify(typeof players !== 'undefined' ? players : []) %>,
+                stats: <%- JSON.stringify(typeof stats !== 'undefined' ? stats : {}) %>,
+                matches: <%- JSON.stringify(typeof matches !== 'undefined' ? matches : []) %>,
+                leagues: <%- JSON.stringify(
+                  typeof leagues !== 'undefined' 
+                    ? leagues 
+                    : (typeof standings !== 'undefined' ? Object.keys(standings).map(id => ({ id, name: `League ${id}` })) : [])
+                ) %>
+              };
+            </script>
+            <script src="/js/stats.js"></script>
           </div>
           <div class="tab" id="manage-users">
             <h1>Manage Users</h1>
             <% if (users && users.length> 0) { %>
               <% users.forEach(user=> { %>
                 <div class="player-card">
-                  <h3>
-                    <%= user.name %>
-                  </h3>
-                  <p>Email: <%= user.email %>
-                  </p>
-                  <p>Role: <%= user.role %>
-                  </p>
-                  <button class="delete-user" data-player-id="<%= user.id %>">Delete</button>
-                  <button class="update-user" data-player-id="<%= user.id %>"
-                    onclick="openUpdateUserDialog('<%= user.id %>')">Update User</button>
+                  <h3><%= user.name %></h3>
+                  <p>Email: <%= user.email %></p>
+                  <p>Role: <%= user.role %></p>
+                  <button class="delete-user" data-user-id="<%= user.id %>">Delete</button>
+                  <button class="update-user" 
+                    data-user-id="<%= user.id %>"
+                    data-user-name="<%= user.name %>"
+                    data-user-email="<%= user.email %>"
+                    data-user-role="<%= user.role %>"
+                    onclick="openUpdateUserDialog(this)">Update User</button>
                 </div>
-                <% }); %>
-                  <% } else { %>
-                    <p>No Users available.</p>
-                    <% } %>
-                      <button class="add-player-btn" onclick="document.getElementById('userDialog').showModal();">+Add
-                        New User</button>
+              <% }); %>
+            <% } else { %>
+              <p>No Users available.</p>
+            <% } %>
+            <button class="add-player-btn" onclick="document.getElementById('userDialog').showModal();">+Add New User</button>
 
-                      <dialog class="player-dialog" id="userDialog">
-                        <h2>Add New User</h2>
-                        <form id="addPlayerForm">
-                          <label for="name">Name:</label>
-                          <input type="text" id="user-name" name="name" required>
+            <dialog class="player-dialog" id="userDialog">
+              <h2>Add New User</h2>
+              <form id="addUserForm">
+                <label for="name">Name:</label>
+                <input type="text" id="user-name" name="name" required>
 
-                          <label for="email">Email:</label>
-                          <input type="email" id="user-email" name="email" required>
+                <label for="email">Email:</label>
+                <input type="email" id="user-email" name="email" required>
 
-                          <label for="position">Role:</label>
-                          <select name="role" id="user-role">
-                            <option value="admin">Admin</option>
-                            <option value="league-manager">League Manager</option>
-                            <option value="team-manager">Team Manager</option>
-                            <option value="user">Ordinary User</option>
-                          </select>
+                <label for="role">Role:</label>
+                <select name="role" id="user-role">
+                  <option value="admin">Admin</option>
+                  <option value="league-manager">League Manager</option>
+                  <option value="team-manager">Team Manager</option>
+                  <option value="user">Ordinary User</option>
+                </select>
 
-                          <label for="password">Password:</label>
-                          <input type="password" id="user-password" name="password" required>
+                <label for="password">Password:</label>
+                <input type="password" id="user-password" name="password" required>
 
-                          <button type="submit" id="submit-user">Create User</button>
-                          <button type="button"
-                            onclick="document.getElementById('userDialog').close();">Cancel</button>
-                        </form>
-                      </dialog>
+                <button type="submit" id="submit-user">Create User</button>
+                <button type="button" onclick="document.getElementById('userDialog').close();">Cancel</button>
+              </form>
+            </dialog>
 
-                      <!-- Update Player Dialog -->
-                      <dialog class="update-player-dialog" id="updateUserDialog">
-                        <h2>Update User</h2>
-                        <form id="updatePlayerForm">
-                          <input type="hidden" id="userId" name="userId">
-                          
-                          <label for="name">Name:</label>
-                          <input type="text" id="new-name" name="name" required>
+            <dialog class="update-player-dialog" id="updateUserDialog">
+              <h2>Update User</h2>
+              <form id="updateUserForm">
+                <input type="hidden" id="userId" name="userId">
+                
+                <label for="name">Name:</label>
+                <input type="text" id="new-name" name="name" required>
 
-                          <label for="email">Email:</label>
-                          <input type="email" id="new-email" name="email" required>
+                <label for="email">Email:</label>
+                <input type="email" id="new-email" name="email" required>
 
-                          <label for="position">Role:</label>
-                          <select name="role" id="new-role">
-                            <option value="admin">Admin</option>
-                            <option value="league-manager">League Manager</option>
-                            <option value="team-manager">Team Manager</option>
-                            <option value="user">Ordinary User</option>
-                          </select>
+                <label for="role">Role:</label>
+                <select name="role" id="new-role">
+                  <option value="admin">Admin</option>
+                  <option value="league-manager">League Manager</option>
+                  <option value="team-manager">Team Manager</option>
+                  <option value="user">Ordinary User</option>
+                </select>
 
-                          <label for="password">Password:</label>
-                          <input type="password" id="new-password" name="password" required>
+                <label for="password">New Password (leave blank to keep current):</label>
+                <input type="password" id="new-password" name="password">
 
-                          <button type="submit" id="update-user-btn">Update User</button>
-                          <button type="button"
-                            onclick="document.getElementById('updateUserDialog').close();">Cancel</button>
-                        </form>
-                      </dialog>
+                <button type="submit" id="update-user-btn">Update User</button>
+                <button type="button" onclick="document.getElementById('updateUserDialog').close();">Cancel</button>
+              </form>
+            </dialog>
           </div>
         </div>
       </div>
     </div>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script>
-      // Pass data from EJS to JS
-      window.appData = {
-        standings: <%- JSON.stringify(typeof standings !== 'undefined' ? standings : {}) %>,
-        players: <%- JSON.stringify(typeof players !== 'undefined' ? players : []) %>,
-        stats: <%- JSON.stringify(typeof stats !== 'undefined' ? stats : {}) %>,
-        matches: <%- JSON.stringify(typeof matches !== 'undefined' ? matches : []) %>,
-        leagues: <%- JSON.stringify(
-          typeof leagues !== 'undefined' 
-            ? leagues 
-            : (typeof standings !== 'undefined' ? Object.keys(standings).map(id => ({ id, name: `League ${id}` })) : [])
-        ) %>
-      };
-    </script>
-    <script src="/js/stats.js"></script>
+   
     <script src="/js/dashboards.js"></script>
     <script src="/js/createUser.js"></script>
 </body>
