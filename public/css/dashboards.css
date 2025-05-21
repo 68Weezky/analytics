@@ -85,6 +85,10 @@ body {
     /* Adjust margin when left tab is visible */
 }
 
+.title{
+    color: #f5f5f5;
+}
+
 .menu {
     height: 40px;
     width: 40px;
